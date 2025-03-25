@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 
-using Booking.Application.Common.Interfaces;
+using Shared.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Booking.Application.Common.Behaviours;
+namespace Shared.Common.Behaviours;
 
 public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

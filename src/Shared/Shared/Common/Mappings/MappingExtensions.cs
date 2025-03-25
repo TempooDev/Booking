@@ -1,6 +1,6 @@
-﻿using Booking.Application.Common.Models;
+﻿using Shared.Common.Models;
 
-namespace Booking.Application.Common.Mappings;
+namespace Shared.Common.Mappings;
 
 public static class MappingExtensions
 {

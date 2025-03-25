@@ -1,4 +1,4 @@
-﻿namespace Booking.Application.Common.Interfaces;
+﻿namespace Shared.Common.Interfaces;
 
 public interface ICurrentUserService
 {

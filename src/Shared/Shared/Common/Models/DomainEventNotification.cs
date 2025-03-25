@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Booking.Application.Common.Models;
+namespace Shared.Common.Models;
 
 public class DomainEventNotification<TDomainEvent> : INotification
     where TDomainEvent : DomainEvent

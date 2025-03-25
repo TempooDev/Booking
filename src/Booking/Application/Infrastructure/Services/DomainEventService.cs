@@ -1,23 +1,17 @@
-﻿using Booking.Application.Common;
-using Booking.Application.Common.Interfaces;
-using Booking.Application.Common.Models;
-
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.Extensions.Logging;
 
-namespace Booking.Application.Infrastructure.Services;
+using Shared.Common;
+using Shared.Common.Interfaces;
+using Shared.Common.Models;
 
-public class DomainEventService : IDomainEventService
+namespace Booking.Booking.Application.Infrastructure.Services;
+
+public class DomainEventService(ILogger<DomainEventService> logger, IPublisher mediator) : IDomainEventService
 {
-    private readonly ILogger<DomainEventService> _logger;
-    private readonly IPublisher _mediator;
-
-    public DomainEventService(ILogger<DomainEventService> logger, IPublisher mediator)
-    {
-        _logger = logger;
-        _mediator = mediator;
-    }
+    private readonly ILogger<DomainEventService> _logger = logger;
+    private readonly IPublisher _mediator = mediator;
 
     public Task Publish(DomainEvent domainEvent)
     {

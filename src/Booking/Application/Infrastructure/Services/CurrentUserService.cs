@@ -1,19 +1,14 @@
 using System.Security.Claims;
 
-using Booking.Application.Common.Interfaces;
-
 using Microsoft.AspNetCore.Http;
 
-namespace Booking.Application.Infrastructure.Services;
+using Shared.Common.Interfaces;
 
-public class CurrentUserService : ICurrentUserService
+namespace Booking.Booking.Application.Infrastructure.Services;
+
+public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)!;
 }

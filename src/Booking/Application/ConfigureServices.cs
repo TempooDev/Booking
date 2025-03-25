@@ -1,14 +1,18 @@
-﻿using Booking.Application.Common.Behaviours;
-using Booking.Application.Common.Interfaces;
-using Booking.Application.Infrastructure.Files;
+﻿using Booking.Application.Common.Interfaces;
 using Booking.Application.Infrastructure.Persistence;
-using Booking.Application.Infrastructure.Services;
+using Booking.Booking.Application.Infrastructure.Files;
+using Booking.Booking.Application.Infrastructure.Services;
+
 using FluentValidation;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Booking.Application;
+using Shared.Common.Behaviours;
+using Shared.Common.Interfaces;
+
+namespace Booking.Booking.Application;
 
 public static class DependencyInjection
 {

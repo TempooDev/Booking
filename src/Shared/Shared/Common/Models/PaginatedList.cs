@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Booking.Application.Common.Models;
+namespace Shared.Common.Models;
 
 public class PaginatedList<T>
 {

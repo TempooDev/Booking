@@ -1,4 +1,4 @@
-﻿namespace Booking.Application.Common;
+﻿namespace Shared.Common;
 
 public abstract class AuditableEntity
 {

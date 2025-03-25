@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 
-using Booking.Application.Common.Interfaces;
-using Booking.Application.Common.Security;
+using Shared.Common.Interfaces;
+using Shared.Common.Security;
 using MediatR;
 
-namespace Booking.Application.Common.Behaviours;
+namespace Shared.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

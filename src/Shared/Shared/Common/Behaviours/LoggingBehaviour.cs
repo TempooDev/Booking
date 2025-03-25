@@ -1,8 +1,8 @@
-﻿using Booking.Application.Common.Interfaces;
+﻿using Shared.Common.Interfaces;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
-namespace Booking.Application.Common.Behaviours;
+namespace Shared.Common.Behaviours;
 
 public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
     where TRequest : notnull

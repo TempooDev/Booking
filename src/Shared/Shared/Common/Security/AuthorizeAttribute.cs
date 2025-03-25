@@ -1,4 +1,4 @@
-﻿namespace Booking.Application.Common.Security;
+﻿namespace Shared.Common.Security;
 
 /// <summary>
 /// Specifies the class this attribute is applied to requires authorization.

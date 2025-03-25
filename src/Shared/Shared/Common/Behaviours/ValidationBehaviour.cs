@@ -4,7 +4,7 @@ using FluentValidation;
 
 using MediatR;
 
-namespace Booking.Application.Common.Behaviours;
+namespace Shared.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse>(IValidator<TRequest>? validator = null)
     : IPipelineBehavior<TRequest, TResponse>

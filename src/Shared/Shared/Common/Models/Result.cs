@@ -1,4 +1,4 @@
-﻿namespace Booking.Application.Common.Models;
+﻿namespace Shared.Common.Models;
 
 public class Result
 {
