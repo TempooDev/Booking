@@ -4,7 +4,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <AssemblyName>VerticalSliceArchitecture.$(MSBuildProjectName)</AssemblyName>
+        <AssemblyName>Booking.$(MSBuildProjectName)</AssemblyName>
         <RootNamespace>$(AssemblyName)</RootNamespace>
 
         <AnalysisLevel>latest-minimum</AnalysisLevel>

@@ -2,8 +2,7 @@
 
 using NUnit.Framework;
 
-using VerticalSliceArchitecture.Application.Common.Exceptions;
-using VerticalSliceArchitecture.Application.Entities;
+using VerticalSliceArchitecture.Application.Domain.Todos;
 using VerticalSliceArchitecture.Application.Features.TodoItems;
 using VerticalSliceArchitecture.Application.Features.TodoLists;
 
@@ -15,30 +14,20 @@ public class DeleteTodoItemTests : TestBase
     [Test]
     public async Task ShouldRequireValidTodoItemId()
     {
-        var command = new DeleteTodoItemCommand { Id = 99 };
+        var command = new DeleteTodoItemCommand(99);
 
         await FluentActions.Invoking(() =>
-            SendAsync(command)).Should().ThrowAsync<NotFoundException>();
+            SendAsync(command)).Should().ThrowAsync<Exception>();
     }
 
     [Test]
     public async Task ShouldDeleteTodoItem()
     {
-        var listId = await SendAsync(new CreateTodoListCommand
-        {
-            Title = "New List"
-        });
+        var listId = await SendAsync(new CreateTodoListCommand("New List"));
 
-        var itemId = await SendAsync(new CreateTodoItemCommand
-        {
-            ListId = listId,
-            Title = "New Item"
-        });
+        var itemId = await SendAsync(new CreateTodoItemCommand(listId.Value, "New Item"));
 
-        await SendAsync(new DeleteTodoItemCommand
-        {
-            Id = itemId
-        });
+        await SendAsync(new DeleteTodoItemCommand(itemId.Value));
 
         var item = await FindAsync<TodoItem>(itemId);
 

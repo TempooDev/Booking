@@ -1,34 +1,30 @@
-﻿using FluentAssertions;
+﻿using System.ComponentModel.DataAnnotations;
+
+using FluentAssertions;
+
 using NUnit.Framework;
-using VerticalSliceArchitecture.Application.Common.Exceptions;
-using VerticalSliceArchitecture.Application.Entities;
+
+using VerticalSliceArchitecture.Application.Domain.Todos;
 using VerticalSliceArchitecture.Application.Features.TodoLists;
 
+using static VerticalSliceArchitecture.Application.IntegrationTests.Testing;
+
 namespace VerticalSliceArchitecture.Application.IntegrationTests.TodoLists;
-
-using static Testing;
-
 public class CreateTodoListTests : TestBase
 {
     [Test]
     public async Task ShouldRequireMinimumFields()
     {
-        var command = new CreateTodoListCommand();
+        var command = new CreateTodoListCommand(Title: null);
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<ValidationException>();
     }
 
     [Test]
     public async Task ShouldRequireUniqueTitle()
     {
-        await SendAsync(new CreateTodoListCommand
-        {
-            Title = "Shopping"
-        });
+        await SendAsync(new CreateTodoListCommand("Shopping"));
 
-        var command = new CreateTodoListCommand
-        {
-            Title = "Shopping"
-        };
+        var command = new CreateTodoListCommand("Shopping");
 
         await FluentActions.Invoking(() =>
             SendAsync(command)).Should().ThrowAsync<ValidationException>();
@@ -39,10 +35,7 @@ public class CreateTodoListTests : TestBase
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var command = new CreateTodoListCommand
-        {
-            Title = "Tasks"
-        };
+        var command = new CreateTodoListCommand("Tasks");
 
         var id = await SendAsync(command);
 

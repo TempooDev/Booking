@@ -1,6 +1,6 @@
-﻿using VerticalSliceArchitecture.Application.Domain.ValueObjects;
+﻿using Booking.Application.Domain.ValueObjects;
 
-namespace VerticalSliceArchitecture.Application.UnitTests.ValueObjects;
+namespace Booking.Application.UnitTests.ValueObjects;
 
 public class ColourTests
 {

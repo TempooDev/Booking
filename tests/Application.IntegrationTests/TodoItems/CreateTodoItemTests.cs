@@ -1,9 +1,7 @@
-﻿using FluentAssertions;
-
+﻿using ErrorOr;
+using FluentAssertions;
 using NUnit.Framework;
-
-using VerticalSliceArchitecture.Application.Common.Exceptions;
-using VerticalSliceArchitecture.Application.Entities;
+using VerticalSliceArchitecture.Application.Domain.Todos;
 using VerticalSliceArchitecture.Application.Features.TodoItems;
 using VerticalSliceArchitecture.Application.Features.TodoLists;
 
@@ -15,10 +13,16 @@ public class CreateTodoItemTests : TestBase
     [Test]
     public async Task ShouldRequireMinimumFields()
     {
-        var command = new CreateTodoItemCommand();
+        // Corregir la creación del comando para pasar los parámetros requeridos
+        var command = new CreateTodoItemCommand(0, null);
 
-        await FluentActions.Invoking(() =>
-            SendAsync(command)).Should().ThrowAsync<ValidationException>();
+        // Modificar la expectativa para adaptarse al nuevo sistema basado en ErrorOr
+        var result = await SendAsync(command);
+
+        // Verificar que el resultado contenga errores de validación
+        result.IsError.Should().BeTrue();
+        result.Errors.Should().NotBeEmpty();
+        result.Errors.Should().Contain(e => e.Type == ErrorType.Validation);
     }
 
     [Test]
@@ -26,18 +30,19 @@ public class CreateTodoItemTests : TestBase
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var listId = await SendAsync(new CreateTodoListCommand
-        {
-            Title = "New List"
-        });
+        // Crear el comando con los parámetros requeridos
+        var listId = await SendAsync(new CreateTodoListCommand("New List"));
 
-        var command = new CreateTodoItemCommand
-        {
-            ListId = listId,
-            Title = "Tasks"
-        };
+        // Crear el comando con los parámetros requeridos
+        var command = new CreateTodoItemCommand(
+            ListId: listId.Value,
+            Title: "Tasks");
 
-        var itemId = await SendAsync(command);
+        var result = await SendAsync(command);
+
+        // Verificar que no hay errores y obtener el ID
+        result.IsError.Should().BeFalse();
+        var itemId = result.Value;
 
         var item = await FindAsync<TodoItem>(itemId);
 

@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Booking.Application.Common.Behaviours;
+using Booking.Application.Common.Interfaces;
+using Booking.Application.Features.TodoItems;
+
+using Microsoft.Extensions.Logging;
 
 using Moq;
 
-using VerticalSliceArchitecture.Application.Common.Behaviours;
-using VerticalSliceArchitecture.Application.Common.Interfaces;
-using VerticalSliceArchitecture.Application.Features.TodoItems;
-
-namespace VerticalSliceArchitecture.Application.UnitTests.Common.Behaviours;
+namespace Booking.Application.UnitTests.Common.Behaviours;
 
 public class RequestLoggerTests
 {

@@ -20,10 +20,10 @@ namespace VerticalSliceArchitecture.Application.IntegrationTests;
 [SetUpFixture]
 public class Testing
 {
-    private static IConfigurationRoot s_configuration = null!;
-    private static IServiceScopeFactory s_scopeFactory = null!;
-    private static Checkpoint s_checkpoint = null!;
-    private static string? s_currentUserId;
+    private static IConfigurationRoot configuration = null!;
+    private static IServiceScopeFactory scopeFactory = null!;
+    private static Checkpoint checkpoint = null!;
+    private static string? currentUserId;
 
     [OneTimeSetUp]
     public void RunBeforeAnyTests()
@@ -33,9 +33,9 @@ public class Testing
             .AddJsonFile("appsettings.json", true, true)
             .AddEnvironmentVariables();
 
-        s_configuration = builder.Build();
+        configuration = builder.Build();
 
-        var startup = new Startup(s_configuration);
+        var startup = new Program(configuration);
 
         var services = new ServiceCollection();
 
@@ -59,18 +59,18 @@ public class Testing
 
         // Register testing version
         services.AddTransient(provider =>
-            Mock.Of<ICurrentUserService>(s => s.UserId == s_currentUserId));
+            Mock.Of<ICurrentUserService>(s => s.UserId == currentUserId));
 
-        s_scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
+        scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
-        s_checkpoint = new Checkpoint { TablesToIgnore = new[] { "__EFMigrationsHistory" } };
+        checkpoint = new Checkpoint { TablesToIgnore = new[] { "__EFMigrationsHistory" } };
 
         EnsureDatabase();
     }
 
     private static void EnsureDatabase()
     {
-        using var scope = s_scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -79,7 +79,7 @@ public class Testing
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {
-        using var scope = s_scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
 
         var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
 
@@ -88,22 +88,22 @@ public class Testing
 
     public static Task<string> RunAsDefaultUserAsync()
     {
-        s_currentUserId = "test@local";
+        currentUserId = "test@local";
 
-        return Task.FromResult(s_currentUserId);
+        return Task.FromResult(currentUserId);
     }
 
     public static async Task ResetState()
     {
-        await s_checkpoint.Reset(s_configuration.GetConnectionString("DefaultConnection"));
+        await checkpoint.Reset(configuration.GetConnectionString("DefaultConnection"));
 
-        s_currentUserId = null;
+        currentUserId = null;
     }
 
     public static async Task<TEntity?> FindAsync<TEntity>(params object[] keyValues)
         where TEntity : class
     {
-        using var scope = s_scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -113,7 +113,7 @@ public class Testing
     public static async Task AddAsync<TEntity>(TEntity entity)
         where TEntity : class
     {
-        using var scope = s_scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -124,7 +124,7 @@ public class Testing
 
     public static async Task<int> CountAsync<TEntity>() where TEntity : class
     {
-        using var scope = s_scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 

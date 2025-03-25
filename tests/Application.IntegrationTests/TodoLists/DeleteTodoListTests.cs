@@ -2,8 +2,6 @@
 
 using NUnit.Framework;
 
-using VerticalSliceArchitecture.Application.Common.Exceptions;
-using VerticalSliceArchitecture.Application.Entities;
 using VerticalSliceArchitecture.Application.Features.TodoLists;
 
 using static VerticalSliceArchitecture.Application.IntegrationTests.Testing;
@@ -14,22 +12,16 @@ public class DeleteTodoListTests : TestBase
     [Test]
     public async Task ShouldRequireValidTodoListId()
     {
-        var command = new DeleteTodoListCommand { Id = 99 };
+        var command = new DeleteTodoListCommand(99);
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
     }
 
     [Test]
     public async Task ShouldDeleteTodoList()
     {
-        var listId = await SendAsync(new CreateTodoListCommand
-        {
-            Title = "New List"
-        });
+        var listId = await SendAsync(new CreateTodoListCommand("New List"));
 
-        await SendAsync(new DeleteTodoListCommand
-        {
-            Id = listId
-        });
+        await SendAsync(new DeleteTodoListCommand(listId));
 
         var list = await FindAsync<TodoList>(listId);
 

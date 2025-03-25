@@ -1,13 +1,13 @@
+using Booking.Application.Common.Behaviours;
+using Booking.Application.Domain.Todos;
+using Booking.Application.Features.TodoLists;
+
 using FluentValidation;
 using FluentValidation.Results;
 
 using MediatR;
 
-using VerticalSliceArchitecture.Application.Common.Behaviours;
-using VerticalSliceArchitecture.Application.Domain.Todos;
-using VerticalSliceArchitecture.Application.Features.TodoLists;
-
-namespace VerticalSliceArchitecture.Application.UnitTests.Common.Behaviours;
+namespace Booking.Application.UnitTests.Common.Behaviours;
 
 public class ValidationBehaviorTests
 {
