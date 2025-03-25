@@ -1,4 +1,3 @@
-using Booking.Application.Common.Behaviours;
 using Booking.Application.Domain.Todos;
 using Booking.Application.Features.TodoLists;
 
@@ -6,6 +5,8 @@ using FluentValidation;
 using FluentValidation.Results;
 
 using MediatR;
+
+using Shared.Common.Behaviours;
 
 namespace Booking.Application.UnitTests.Common.Behaviours;
 

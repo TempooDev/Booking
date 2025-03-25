@@ -1,6 +1,6 @@
-﻿using Shared.Common.Interfaces;
-using MediatR.Pipeline;
+﻿using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
+using Shared.Common.Interfaces;
 
 namespace Shared.Common.Behaviours;
 

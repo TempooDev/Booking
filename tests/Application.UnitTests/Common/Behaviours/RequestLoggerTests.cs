@@ -1,10 +1,11 @@
-﻿using Booking.Application.Common.Behaviours;
-using Booking.Application.Common.Interfaces;
-using Booking.Application.Features.TodoItems;
+﻿using Booking.Application.Features.TodoItems;
 
 using Microsoft.Extensions.Logging;
 
 using Moq;
+
+using Shared.Common.Behaviours;
+using Shared.Common.Interfaces;
 
 namespace Booking.Application.UnitTests.Common.Behaviours;
 

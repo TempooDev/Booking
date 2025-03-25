@@ -1,6 +1,6 @@
-using Booking.Application.Common;
+using Shared.Common;
 
-namespace Booking.Application.Domain.Todos;
+namespace Booking.Booking.Application.Domain.Todos;
 
 internal sealed class TodoItemCompletedEvent(TodoItem item) : DomainEvent
 {

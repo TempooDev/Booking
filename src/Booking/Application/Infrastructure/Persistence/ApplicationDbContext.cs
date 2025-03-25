@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
 
-using Booking.Application.Common;
-using Booking.Application.Common.Interfaces;
 using Booking.Application.Domain.Todos;
+using Booking.Booking.Application.Domain.Todos;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+
+using Shared.Common;
+using Shared.Common.Interfaces;
 
 namespace Booking.Application.Infrastructure.Persistence;
 

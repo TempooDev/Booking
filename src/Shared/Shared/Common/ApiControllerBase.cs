@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Booking.Application.Common;
+namespace Booking.Shared.Common;
 
 [ApiController]
 [Route("api/[controller]")]

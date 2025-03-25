@@ -1,9 +1,8 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using ErrorOr;
 
-using Booking.Application.Common;
-using ErrorOr;
+using Shared.Common;
 
-namespace Booking.Application.Domain.ValueObjects;
+namespace Booking.Booking.Application.Domain.ValueObjects;
 
 public class Colour : ValueObject
 {

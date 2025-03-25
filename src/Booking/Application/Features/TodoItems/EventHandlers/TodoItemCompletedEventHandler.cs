@@ -1,9 +1,10 @@
-﻿using Booking.Application.Common.Models;
-using Booking.Application.Domain.Todos;
+﻿using Booking.Booking.Application.Domain.Todos;
 
 using MediatR;
 
 using Microsoft.Extensions.Logging;
+
+using Shared.Common.Models;
 
 namespace Booking.Application.Features.TodoItems.EventHandlers;
 

@@ -1,7 +1,8 @@
-﻿using Booking.Application.Common;
-using Booking.Application.Common.Mappings;
+﻿using Booking.Application.Domain.Todos;
 
-namespace Booking.Application.Domain.Todos;
+using Shared.Common;
+
+namespace Booking.Booking.Application.Domain.Todos;
 
 public class TodoItem : AuditableEntity, IHasDomainEvent
 {

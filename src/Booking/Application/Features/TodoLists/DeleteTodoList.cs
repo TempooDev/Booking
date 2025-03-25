@@ -1,5 +1,5 @@
-﻿using Booking.Application.Common;
-using Booking.Application.Infrastructure.Persistence;
+﻿using Booking.Application.Infrastructure.Persistence;
+using Booking.Shared.Common;
 
 using ErrorOr;
 

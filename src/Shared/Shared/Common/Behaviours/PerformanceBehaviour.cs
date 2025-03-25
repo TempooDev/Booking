@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 
-using Shared.Common.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Shared.Common.Interfaces;
 
 namespace Shared.Common.Behaviours;
 

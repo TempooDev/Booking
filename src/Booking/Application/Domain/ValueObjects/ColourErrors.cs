@@ -1,6 +1,6 @@
 using ErrorOr;
 
-namespace Booking.Application.Domain.ValueObjects;
+namespace Booking.Booking.Application.Domain.ValueObjects;
 
 public static class ColourErrors
 {

@@ -1,8 +1,6 @@
-﻿using Booking.Application.Common;
-using Booking.Application.Common.Mappings;
-using Booking.Application.Common.Models;
-using Booking.Application.Domain.Todos;
-using Booking.Application.Infrastructure.Persistence;
+﻿using Booking.Application.Infrastructure.Persistence;
+using Booking.Booking.Application.Domain.Todos;
+using Booking.Shared.Common;
 
 using ErrorOr;
 
@@ -12,7 +10,10 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Booking.Application.Features.TodoItems;
+using Shared.Common.Mappings;
+using Shared.Common.Models;
+
+namespace Booking.Booking.Application.Features.TodoItems;
 
 public class GetTodoItemsWithPaginationController : ApiControllerBase
 {

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
+using MediatR;
 using Shared.Common.Interfaces;
 using Shared.Common.Security;
-using MediatR;
 
 namespace Shared.Common.Behaviours;
 

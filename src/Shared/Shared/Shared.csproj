@@ -8,9 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" />
+      <PackageReference Include="FluentValidation.AspNetCore" />
       <PackageReference Include="MediatR" />
       <PackageReference Include="ErrorOr" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 
