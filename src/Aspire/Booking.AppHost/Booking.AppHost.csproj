@@ -13,10 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Booking\Api\Booking.Api.csproj" />
+    <ProjectReference Include="..\..\Booking\Booking.MigrationService\Booking.MigrationService.csproj" />
   </ItemGroup>
 
 </Project>

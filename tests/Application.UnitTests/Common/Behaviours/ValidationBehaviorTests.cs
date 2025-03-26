@@ -1,5 +1,5 @@
-using Booking.Application.Domain.Todos;
-using Booking.Application.Features.TodoLists;
+using Booking.Booking.Application.TodoLists.Application;
+using Booking.Booking.Application.TodoLists.Domain;
 
 using FluentValidation;
 using FluentValidation.Results;

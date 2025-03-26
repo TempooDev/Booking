@@ -1,4 +1,4 @@
-﻿using Booking.Booking.Application.Domain.ValueObjects;
+﻿using Booking.Booking.Application.TodoItems.Domain.ValueObjects;
 
 namespace Booking.Application.UnitTests.ValueObjects;
 

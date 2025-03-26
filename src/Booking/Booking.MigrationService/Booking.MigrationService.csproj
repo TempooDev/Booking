@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Booking.MigrationService-a64c272f-6aa9-4f1d-9a21-dd0d1803b24b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aspire\Booking.ServiceDefaults\Booking.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Application\Booking.Application.csproj" />
+  </ItemGroup>
+</Project>

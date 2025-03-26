@@ -1,4 +1,4 @@
-using Booking.Booking.Application;
+using Booking.Booking.Application.Common;
 
 using Microsoft.OpenApi.Models;
 

@@ -1,4 +1,4 @@
-﻿using Booking.Booking.Application.Domain.Todos;
+﻿using Booking.Booking.Application.TodoItems.Domain;
 
 namespace Booking.Application.Common.Interfaces;
 
