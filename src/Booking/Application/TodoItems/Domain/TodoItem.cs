@@ -6,8 +6,6 @@ namespace Booking.Booking.Application.TodoItems.Domain;
 
 public class TodoItem : AuditableEntity, IHasDomainEvent
 {
-    public int Id { get; set; }
-
     public int ListId { get; set; }
 
     public string? Title { get; set; }

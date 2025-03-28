@@ -1,10 +1,13 @@
 ﻿using System.Reflection;
 
 using Booking.Booking.Application.TodoItems.Domain;
+using Booking.Booking.Application.TodoItems.Domain.ValueObjects;
 using Booking.Booking.Application.TodoLists.Domain;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using Shared.Common;
 using Shared.Common.Interfaces;
@@ -73,9 +76,68 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        // Ignorar DomainEvent y sus colecciones
+        builder.Ignore<DomainEvent>();
+        builder.Ignore<List<DomainEvent>>();
+
+        builder.Entity<TodoList>(entity =>
+        {
+            entity.ToTable("TodoLists");
+
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            // Configuración correcta del Value Object Colour
+            entity.OwnsOne(e => e.Colour, colourBuilder =>
+            {
+                colourBuilder.Property(c => c.Code)
+                    .HasColumnName("ColourCode")
+                    .HasMaxLength(7)
+                    .IsRequired(false);  // Hacerlo opcional ya que Colour es nullable
+            });
+        });
+
+        builder.Entity<TodoItem>(entity =>
+        {
+            entity.ToTable("TodoItems");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.HasOne(d => d.List)
+                .WithMany(p => p.Items)
+                .HasForeignKey(d => d.ListId);
+        });
+
+        // Configurar todas las propiedades DateTime para usar UTC
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                        v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+                }
+            }
+        }
 
         base.OnModelCreating(builder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()
+                .LogTo(Console.WriteLine);
+        }
+
+        base.OnConfiguring(optionsBuilder);
     }
 
     private async Task DispatchEvents(DomainEvent[] events)
