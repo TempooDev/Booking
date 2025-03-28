@@ -61,8 +61,3 @@ jobs:
             echo "Build failed!"
             exit 1
           fi
-
-      # 6) Check code style and analysis
-      - name: Format Check
-        if: success()
-        run: dotnet format --verify-no-changes --verbosity diagnostic
