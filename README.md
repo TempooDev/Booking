@@ -1,197 +1,264 @@
-# Vertical Slice Architecture example in .NET 9
+# Booking Microservices Project
 
-Check out my [blog post](https://nadirbad.dev/posts/vetical-slice-architecture-dotnet/) for more details about Vertical Slice Architecture.
+A modern microservices architecture built with .NET 8, implementing Domain-Driven Design (DDD) principles and using .NET Aspire for cloud-native development.
 
-This project is an experiment trying to create a API solution template that uses Vertical Slice architecture style.
+## Architecture Overview
 
-The Vertical Slice architecture style is about organizing code by features and vertical slices instead of organizing by technical concerns. It's about an idea of grouping code according to the business functionality and putting all the relevant code close together.
-Vertical Slice architecture can be a starting point and can be evolved later when an application become more sophisticated:
+### Domain-Driven Design (DDD) Implementation
 
-> We can start simple (Transaction Script) and simply refactor to the patterns that emerges from code smells we see in the business logic. [Vertical slice architecture by Jimmy Bogard](https://jimmybogard.com/vertical-slice-architecture/).
+The project follows a clean DDD architecture with these layers:
 
-# Give it a star ⭐
+```
+src/
+├── Booking/
+│   ├── Application/              # Application layer
+│   │   ├── Common/              # Shared components
+│   │   │   ├── Infrastructure/  # Infrastructure implementations
+│   │   │   └── Domain/         # Domain abstractions
+│   │   ├── TodoItems/          # Feature module
+│   │   │   ├── Domain/         # Domain model
+│   │   │   └── ValueObjects/   # Value objects
+│   │   └── TodoLists/          # Feature module
+│   │       └── Domain/         # Domain model
+│   ├── Api/                     # API layer
+│   └── MigrationService/        # Database migrations
+└── Aspire/                      # .NET Aspire orchestration
+    └── Booking.AppHost/         # Application host
+```
 
-Loving it? Show your support by giving this project a star!
+#### Layer Responsibilities
 
-## Technologies and patterns
+- **Domain Layer**: Contains business logic, entities, value objects, and domain events
+- **Application Layer**: Orchestrates the domain objects to perform tasks
+- **Infrastructure Layer**: Implements interfaces defined in the domain
+- **API Layer**: Handles HTTP requests and responses
+- **Migration Service**: Manages database schema evolution
 
-This project repository is created based on [Clean Architecture solution template by Jason Taylor](https://github.com/jasontaylordev/CleanArchitecture), and it uses technology choices and application business logic from this template.
+### Value Objects Pattern
 
-- [ASP.NET API with .NET 9](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-9.0)
-- CQRS with [MediatR](https://github.com/jbogard/MediatR)
-- [FluentValidation](https://fluentvalidation.net/)
-- [Entity Framework Core 9](https://docs.microsoft.com/en-us/ef/core/)
-- [xUnit](https://xunit.net/), [FluentAssertions](https://fluentassertions.com/), [Moq](https://github.com/moq)
-- Result pattern for handling exceptions and errors using [ErrorOr package](https://github.com/amantinband/error-or)
+Example of a Value Object implementation:
 
-Afterwards, the projects and architecture is refactored towards the Vertical slice architecture style.
+```csharp
+public record Colour
+{
+    private Colour(string code) => Code = code;
+    public string Code { get; }
+    
+    public static ErrorOr<Colour> From(string code) => 
+        // Validation logic
+}
+```
 
-## Purpose of this repository
+## Creating New Microservices
 
-Most applications start simple but they tend to change and evolve over time. Because of this, I wanted to create a simpler API solution template that focuses on the vertical slices architecture style.
+To add a new microservice:
 
-Typically if I need to change a feature in an application, I end up touching different layers of the application and navigating through piles of projects, folders and files.
+1. Create a new folder under `src/`
+2. Follow the DDD structure:
+```
+NewService/
+├── Application/
+│   ├── Common/
+│   └── Features/
+├── Api/
+└── MigrationService/
+```
 
-Goal is to stop thinking about horizontal layers and start thinking about vertical slices and organize code by **Features**. When the code is organized by feature you get the benefits of not having to jump around projects, folders and files. Things related to given features are placed close together.
+3. Register in Aspire's `Program.cs`:
 
-When moving towards the vertical slices we stop thinking about layers and abstractions. The reason is the vertical slice doesn't necessarily need shared layer abstractions like repositories, services, controllers. We are more focused on concrete behavior implementation and what is the best solution to implements.
+```csharp
+var builder = DistributedApplication.CreateBuilder(args);
 
-## Projects breakdown
+var newServiceDb = sqlServer.AddDatabase("newservice");
+var newService = builder.AddProject<Projects.NewService>("new-service")
+    .WithReference(newServiceDb);
+```
 
-The solution template is broken into 2 projects:
+## .NET Aspire Integration
 
-### Api
+Aspire provides:
 
-ASP.NET Web API project is an entry point to the application, but it doesn't have any controllers, all the controller actions are moved to the **Application** project features.
+- **Service Discovery**: Automatic service registration and discovery
+- **Health Monitoring**: Built-in health checks
+- **Configuration Management**: Centralized configuration
+- **Container Orchestration**: Managed container lifecycle
+- **Local Development**: Simplified local development experience
 
-### Application
+### Example Aspire Configuration
 
-This projects contains contains all applications logic and shared concerns like Domain Entities, Infrastructure and other common concerns. All the business logic is placed in a `Feature` folders. Instead of having a file for basically controller, command/query, validator, handlers, models, I placed everything usually in one file and have all the relevant things close together.
+```csharp
+var builder = DistributedApplication.CreateBuilder(args);
 
-## Getting started
+// Database
+var sqlServer = builder.AddPostgres("sql")
+    .WithLifetime(ContainerLifetime.Persistent);
 
-1. Install the latest [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
-2. Navigate to `src/Api` and run `dotnet run` to launch the back end (ASP.NET Core Web API) or via `dotnet run --project src/Api/Api.csproj`
+// Migrations
+var bookingDb = sqlServer.AddDatabase("booking");
+var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>()
+    .WithReference(bookingDb);
 
-### Build, test and publish application
+// API
+builder.AddProject<Projects.Booking_Api>()
+    .WithReference(bookingDb)
+    .WaitForCompletion(bookingMigration);
+```
 
-CLI commands executed from the root folder.
+## Development Workflow
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+dotnet restore
+```
+
+3. Run the project:
+```bash
+cd src/Aspire/Booking.AppHost
+dotnet run
+```
+
+## Best Practices
+
+- Keep domains bounded and well-defined
+- Use Value Objects for domain concepts
+- Implement domain events for cross-boundary communication
+- Follow SOLID principles
+- Use clean architecture patterns
+
+## Testing
 
 ```bash
-# build
-dotnet build
-
-# run
-dotnet run --project src/Api/Api.csproj
-
-# run unit tests
-dotnet test tests/Application.UnitTests/Application.UnitTests.csproj 
-
-# run integrations tests (required database up and running)
-dotnet test tests/Application.IntegrationTests/Application.IntegrationTests.csproj 
-
-# publish
-dotnet publish src/Api/Api.csproj --configuration Release 
+dotnet test
 ```
 
-### Test solution locally
+## Contributing
 
-To run API locally, for example to debug them, you can use the VS Code (just open and press F5) or other IDE (VisualStudio, Rider).
-By default the project uses in-memory database, but if you would like to change that check the next section about [Database Configuration](#database-configuration)
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-To run the project from the terminal
+## Database Migrations
 
-```shell
-dotnet run --project src/Api/Api.csproj
-```
+### Prerequisites
 
-and you'll be good to go everything will be up and running. Go the the indicated URL [https://localhost:7098/](https://localhost:7098/) and you'll see the API Swagger UI.
-
-### Database Configuration
-
-The project is configured to use an in-memory database by default. So you can run the project without additional infrastructure (SQL Server)
-
-If you would like to use SQL Server, you will need to update **Api/appsettings.json** as follows:
-
-```json
-  "UseInMemoryDatabase": false,
-```
-
-Verify that the **DefaultConnection** connection string within **appsettings.json** points to a valid SQL Server instance.
-
-When you run the application the database will be automatically created (if necessary) and the latest migrations will be applied.
-
-The solution I work with is running Azure SQL Edge in Docker as a database for local development and testing. In the following section, I'll describe the steps needed to setup SQL Edge:
-
-#### Use Azure SQL Edge
-
-Docker is a great way to play with SQL Server without the administrative overhead of managing an instance.
-
-Azure SQL Edge is a way to test and develop using SQL Server locally, and have a consistent experience between machines, whether they're PCs running Windows, Intel-based Macs, or the new Apple silicon M1 (there are no Docker images for SQL Server that support ARM64 just yet).
-
-We'll need Docker first to get started – easiest is to install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-
-With Docker up and running, next we need to pull the most recent Azure SQL Edge container image:
-
+- EF Core CLI tools installed globally:
 ```bash
-sudo docker pull mcr.microsoft.com/azure-sql-edge:latest
+dotnet tool install --global dotnet-ef
 ```
 
-We can create and start the appropriate container with the following command:
+### Migration Commands
 
+#### Create Initial Migration
 ```bash
-sudo docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=yourStrong(!)Password' -p 1433:1433 --name azuresqledge -d mcr.microsoft.com/azure-sql-edge
+cd src/Booking/Application
+dotnet ef migrations add InitialCreate -o Common/Infrastructure/Persistence/Migrations
 ```
 
-I decided to use Azure SQL Edge as flavor of SQL Server in Docker, and enable local development and testing no matter which OS you're running.
-
-#### Database Migrations
-
-To use `dotnet-ef` for your migrations please add the following flags to your command (values assume you are executing from repository root)
-
-- `--project src/Application` (optional if in this folder)
-- `--startup-project src/Api`
-- `--output-dir Infrastructure/Persistence/Migrations`
-
-For example, to add a new migration from the root folder:
-
- ```shell
-dotnet ef migrations add "InitialMigration" --project src/Application --startup-project src/Api --output-dir Infrastructure/Persistence/Migrations
+#### Apply Migrations
+```bash
+dotnet ef database update
 ```
 
-and apply migration and update the database:
+### Migration Structure
 
-```shell
-dotnet ef database update --project src/Application --startup-project src/Api   
+```
+Application/
+└── Common/
+    └── Infrastructure/
+        └── Persistence/
+            ├── ApplicationDbContext.cs
+            └── Migrations/
+                ├── YYYYMMDDHHMMSS_InitialCreate.cs
+                ├── YYYYMMDDHHMMSS_InitialCreate.Designer.cs
+                └── ApplicationDbContextModelSnapshot.cs
 ```
 
-### Testing API endpoints
+### Useful Commands
 
-You can test the endpoints using tools like [Postman](https://www.postman.com/) or simply from VS Code using the [REST Client extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
-
-Find the example requests in the `requests` folder in the root of the project.
-
-## Code analysis
-
-Developers should follow Microsoft's [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions).
-
-To enforce consistent coding styles and settings in the codebase, we use an EditorConfig file (**.editorconfig**) prepopulated with the default [.NET code style, formatting, and naming conventions](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options).
-
-For [code analysis](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-9)
-we use the built in analyzers.
-
-**IMPORTANT NOTES:**
-
-- EditorConfig settings take precedence over global IDE text editor settings.
-- New lines of code are formatted according to the EditorConfig settings
-- **The formatting of existing code is not changed unless you run**:
-  - `dotnet format` from the command line
-
-There are a few arguments we can supply to the dotnet format command to control its usage. A useful one is the `--verify-no-changes argument`. This argument is useful when we want to understand when code breaks standards, but not automatically clean it up.
-
-```shell
-dotnet format --verify-no-changes
+#### List Migrations
+```bash
+dotnet ef migrations list
 ```
 
-Both code formating and analysis can be performed from the cli by running:
-
-```shell
-dotnet format style
-dotnet format analyzers
+#### Remove Last Migration
+```bash
+dotnet ef migrations remove
 ```
 
-or to execute both
-
-```shell
-dotnet format
+#### Generate SQL Script
+```bash
+dotnet ef migrations script
 ```
 
-## Inspired by
+### Migration Best Practices
 
-- [Clean Architecture solution template by Jason Taylor](https://github.com/jasontaylordev/CleanArchitecture)
-- [Vertical slice architecture by Jimmy Bogard](https://jimmybogard.com/vertical-slice-architecture/)
-- [Organize code by Feature using Vertical Slices by Derek Comartin](https://codeopinion.com/organizing-code-by-feature-using-vertical-slices/)
+1. **Naming Conventions**
+   - Use descriptive names: `AddUserTable`, `UpdateProductSchema`
+   - Avoid generic names: `Update1`, `Change2`
 
-## License
+2. **Version Control**
+   - Always include migrations in source control
+   - Never modify existing migrations in production
+   - Create new migrations for additional changes
 
-This project is licensed with the [MIT license](./LICENSE).
+3. **Testing**
+   - Test migrations in development environment
+   - Verify both up and down migrations
+   - Include migration tests in CI pipeline
+
+### Troubleshooting
+
+#### Common Issues
+
+1. **Context Not Found**
+   - Verify correct namespace
+   - Check DbContext registration in DI
+
+2. **Connection Errors**
+   - Verify PostgreSQL is running
+   - Check connection string in `appsettings.json`
+   - Ensure database exists
+
+3. **Migration Conflicts**
+   - Clean existing migrations:
+```bash
+rm -rf Common/Infrastructure/Persistence/Migrations
+```
+   - Recreate initial migration:
+```bash
+dotnet ef migrations add InitialCreate -o Common/Infrastructure/Persistence/Migrations
+```
+
+#### Required Packages
+
+```xml
+<ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+</ItemGroup>
+```
+
+### Migration Service Integration
+
+The MigrationService project handles automatic database migrations during deployment:
+
+```csharp
+public class Worker : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        // Apply migrations on startup
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync(cancellationToken);
+    }
+}
+```
+
+This ensures:
+- Automatic migration execution
+- Safe deployment process
+- Database schema consistency
