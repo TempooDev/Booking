@@ -25,7 +25,6 @@ namespace Booking.Booking.MigrationService
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 await RunMigrationAsync(dbContext, cancellationToken);
-                await ApplicationDbContextSeed.SeedSampleDataAsync(dbContext);
             }
             catch (Exception ex)
             {
