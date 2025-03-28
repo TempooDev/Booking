@@ -1,6 +1,6 @@
 # Booking Microservices Project
 
-A modern microservices architecture built with .NET 8, implementing Domain-Driven Design (DDD) principles and using .NET Aspire for cloud-native development.
+A modern microservices architecture built with .NET 9, implementing Domain-Driven Design (DDD) principles and using .NET Aspire for cloud-native development.
 
 ## Architecture Overview
 
