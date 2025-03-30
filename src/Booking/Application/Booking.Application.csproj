@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Booking\Infrastructure\Persistence\" />
     <Folder Include="Common\Infrastructure\Persistence\Configurations\" />
   </ItemGroup>
 </Project>

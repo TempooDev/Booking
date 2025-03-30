@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 
+using Booking.Booking.Application.Booking.Domain;
 using Booking.Booking.Application.TodoItems.Domain;
 using Booking.Booking.Application.TodoLists.Domain;
 
@@ -32,6 +33,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+    public DbSet<BookingItem> Bookings => Set<BookingItem>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
