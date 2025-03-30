@@ -30,7 +30,7 @@ public class CreateBookingController : ApiControllerBase
     }
 }
 
-public record CreateBookingCommand(Guid CustomerId, Guid SellerId, Guid ProductId, string? Location, DateTime StartTime, DateTime EndTime, int NumberOfGuests, string? RoomType, string? Notes ) : IRequest<ErrorOr<Guid>>;
+public record CreateBookingCommand(Guid CustomerId, Guid SellerId, Guid ProductId, string? Location, DateTime StartTime, DateTime EndTime, int NumberOfGuests, string? RoomType, string? Notes) : IRequest<ErrorOr<Guid>>;
 
 internal sealed class CreateBookingCommandValidator : AbstractValidator<CreateBookingCommand>
 {

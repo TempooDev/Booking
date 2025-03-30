@@ -36,7 +36,7 @@ public static class DependencyInjection
     {
         services.AddDbContext<ApplicationDbContext>(options =>
                options.UseNpgsql(
-                   configuration.GetConnectionString("booking"),
+                   configuration.GetConnectionString("booking-db"),
                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         services.AddScoped<IDomainEventService, DomainEventService>();
