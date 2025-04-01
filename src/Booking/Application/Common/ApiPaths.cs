@@ -2,5 +2,6 @@ namespace Booking.Booking.Application.Common;
 
 internal static class ApiPaths
 {
-    internal const string Root = "api";
+    public const string Root = "api/v1";
+    public const string Booking = "Booking";
 }

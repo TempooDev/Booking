@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Booking.Booking.Application.Booking.Domain;
+using Booking.Booking.Application.Common;
 using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Shared.Common;
 
@@ -18,9 +19,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Booking.Booking.Application.Booking.Application.Commands;
 
+[ApiController]
+[Route($"{ApiPaths.Root}/[controller]")]
+[ApiExplorerSettings(GroupName = ApiPaths.Booking)]
 public class CreateBookingController : ApiControllerBase
 {
-    [HttpPost("/api/booking")]
+    [HttpPost]
     public async Task<IActionResult> Create(CreateBookingCommand command)
     {
         var result = await Mediator.Send(command);
@@ -78,7 +82,7 @@ internal sealed class CreateBookingCommandHandler(ApplicationDbContext context) 
         };
         _context.Bookings.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-        return entity.BookingId;
+        return entity.Id;
     }
 }
 

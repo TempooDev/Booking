@@ -1,7 +1,6 @@
 ﻿using Booking.Application.Common.Interfaces;
 using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Booking.Application.Common.Infrastructure.Services;
-using Booking.Booking.Application.TodoItems.Infrastructure.Files;
 
 using FluentValidation;
 
@@ -42,7 +41,6 @@ public static class DependencyInjection
         services.AddScoped<IDomainEventService, DomainEventService>();
 
         services.AddTransient<IDateTime, DateTimeService>();
-        services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 

@@ -14,7 +14,6 @@ public enum BookingStatus
 
 public class BookingItem : AuditableEntity, IHasDomainEvent
 {
-    public Guid BookingId { get; set; }
     public Guid CustomerId { get; set; }
     public Guid SellerId { get; set; }
     public Guid ProductId { get; set; }

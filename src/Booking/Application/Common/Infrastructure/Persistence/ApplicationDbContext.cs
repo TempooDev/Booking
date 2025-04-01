@@ -1,13 +1,7 @@
-﻿using System.Reflection;
-
-using Booking.Booking.Application.Booking.Domain;
-using Booking.Booking.Application.TodoItems.Domain;
-using Booking.Booking.Application.TodoItems.Domain.ValueObjects;
-using Booking.Booking.Application.TodoLists.Domain;
+﻿using Booking.Booking.Application.Booking.Domain;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using Shared.Common;
@@ -33,9 +27,6 @@ public class ApplicationDbContext : DbContext
         _dateTime = dateTime;
     }
 
-    public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    public DbSet<TodoItem> TodoItems => Set<TodoItem>();
     public DbSet<BookingItem> Bookings => Set<BookingItem>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -81,36 +72,6 @@ public class ApplicationDbContext : DbContext
         // Ignorar DomainEvent y sus colecciones
         builder.Ignore<DomainEvent>();
         builder.Ignore<List<DomainEvent>>();
-
-        builder.Entity<TodoList>(entity =>
-        {
-            entity.ToTable("TodoLists");
-
-            entity.Property(e => e.Title)
-                .HasMaxLength(200)
-                .IsRequired();
-
-            // Configuración correcta del Value Object Colour
-            entity.OwnsOne(e => e.Colour, colourBuilder =>
-            {
-                colourBuilder.Property(c => c.Code)
-                    .HasColumnName("ColourCode")
-                    .HasMaxLength(7)
-                    .IsRequired(false);  // Hacerlo opcional ya que Colour es nullable
-            });
-        });
-
-        builder.Entity<TodoItem>(entity =>
-        {
-            entity.ToTable("TodoItems");
-            entity.Property(e => e.Title)
-                .HasMaxLength(200)
-                .IsRequired();
-
-            entity.HasOne(d => d.List)
-                .WithMany(p => p.Items)
-                .HasForeignKey(d => d.ListId);
-        });
 
         // Configurar todas las propiedades DateTime para usar UTC
         foreach (var entityType in builder.Model.GetEntityTypes())

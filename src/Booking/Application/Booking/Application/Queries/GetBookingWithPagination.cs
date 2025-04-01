@@ -1,4 +1,5 @@
 ﻿using Booking.Booking.Application.Booking.Domain;
+using Booking.Booking.Application.Common;
 using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Shared.Common;
 
@@ -14,9 +15,13 @@ using Shared.Common.Mappings;
 using Shared.Common.Models;
 
 namespace Booking.Booking.Application.Booking.Application.Queries;
+
+[ApiController]
+[Route($"{ApiPaths.Root}/[controller]")]
+[ApiExplorerSettings(GroupName = ApiPaths.Booking)]
 public class GetBookingWithPaginationController : ApiControllerBase
 {
-    [HttpGet("/api/booking")]
+    [HttpGet]
     public async Task<IActionResult> GetBookingWithPagination([FromQuery] GetBookingWithPaginationQuery query)
     {
         var result = await Mediator.Send(query);
@@ -27,7 +32,7 @@ public class GetBookingWithPaginationController : ApiControllerBase
 }
 
 public record BookingBriefResponse(Guid Id, Guid CustomerId, Guid SellerId, Guid ProductId, string? Location, DateTime StartTime, DateTime EndTime, int NumberOfGuests, string? RoomType, string? Notes);
-public record GetBookingWithPaginationQuery(Guid? CustomerId, Guid? SellerId, Guid? ProductId, int PageNumber = 1, int PageSize = 10) : IRequest<ErrorOr<PaginatedList<BookingBriefResponse>>>;
+public record GetBookingWithPaginationQuery(Guid? BookingId, Guid? CustomerId, Guid? SellerId, Guid? ProductId, int PageNumber = 1, int PageSize = 10) : IRequest<ErrorOr<PaginatedList<BookingBriefResponse>>>;
 
 internal sealed class GetBookingWithPaginationQueryValidator : AbstractValidator<GetBookingWithPaginationQuery>
 {
@@ -37,12 +42,6 @@ internal sealed class GetBookingWithPaginationQueryValidator : AbstractValidator
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
         RuleFor(x => x.PageSize)
             .GreaterThanOrEqualTo(1).WithMessage("PageSize at least greater than or equal to 1.");
-        RuleFor(x => x.CustomerId)
-            .NotEmpty().WithMessage("CustomerId is required.");
-        RuleFor(x => x.SellerId)
-            .NotEmpty().WithMessage("SellerId is required.");
-        RuleFor(x => x.ProductId)
-            .NotEmpty().WithMessage("ProductId is required.");
     }
 }
 
@@ -53,6 +52,10 @@ internal sealed class GetBookingWithPaginationQueryHandler(ApplicationDbContext 
     {
         var paginatedList = await _context.Bookings
             .OrderBy(booking => booking.StartTime)
+            .Where(booking => (request.BookingId == null || booking.Id == request.BookingId) &&
+                             (request.CustomerId == null || booking.CustomerId == request.CustomerId) &&
+                              (request.SellerId == null || booking.SellerId == request.SellerId) &&
+                              (request.ProductId == null || booking.ProductId == request.ProductId))
             .Select(booking => ToDto(booking))
             .PaginatedListAsync(request.PageNumber, request.PageSize);
         return paginatedList;
@@ -61,7 +64,7 @@ internal sealed class GetBookingWithPaginationQueryHandler(ApplicationDbContext 
     private static BookingBriefResponse ToDto(BookingItem booking)
     {
         return new BookingBriefResponse(
-            booking.BookingId,
+            booking.Id,
             booking.CustomerId,
             booking.SellerId,
             booking.ProductId,
