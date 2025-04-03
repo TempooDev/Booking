@@ -36,7 +36,6 @@ builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMessaging(builder.Configuration);
-builder.Services.AddPersistence(builder.Configuration);
 
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpContextAccessor();

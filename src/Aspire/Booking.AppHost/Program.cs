@@ -7,20 +7,21 @@ var sqlServer = builder.AddPostgres("sql")
      .WithPgAdmin();
 
 var bookingDb = sqlServer.AddDatabase("booking-db");
+var blobs = builder.AddAzureStorage("storage")
+                   .RunAsEmulator()
+                   .AddBlobs("blobs");
 
 var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>("booking-migrationservice")
     .WithReference(bookingDb)
     .WaitFor(sqlServer)
-    .WaitFor(bookingDb);
+    .WaitFor(bookingDb)
+    .WithReference(blobs)
+    .WaitFor(blobs);
 
 var eventHub = builder.AddAzureEventHubs("eventhubns")
 .RunAsEmulator();
 
 eventHub.AddHub("booking");
-
-var blobs = builder.AddAzureStorage("storage")
-                   .RunAsEmulator()
-                   .AddBlobs("blobs");
 
 builder.AddProject<Projects.Booking_Api>("booking-api")
     .WithReference(bookingDb)

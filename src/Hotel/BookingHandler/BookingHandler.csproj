@@ -13,4 +13,9 @@
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Aspire/Booking.ServiceDefaults/Booking.ServiceDefaults.csproj" />
+    <ProjectReference Include="../../Shared/Shared/Shared.csproj" />
+  </ItemGroup>
 </Project>

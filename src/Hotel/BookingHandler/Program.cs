@@ -1,6 +1,10 @@
 using Booking.Hotel.BookingHandler;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.AddServiceDefaults();
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing.AddSource(BookingEventProcessor.ActivitySourceName));
 
 // Añadir configuración por defecto de Aspire
 // Configurar logging

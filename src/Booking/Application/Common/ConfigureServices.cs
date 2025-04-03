@@ -61,9 +61,19 @@ public static class DependencyInjection
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(
-                configuration.GetConnectionString("booking-db"),
-                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+              options.UseNpgsql(
+                  configuration.GetConnectionString("booking-db"),
+                  b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+        return services;
+    }
+
+    public static IServiceCollection AddMigrationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Solo servicios necesarios para migración
+        services.AddPersistence(configuration);
+        services.AddTransient<IDateTime, DateTimeService>();
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
         return services;
     }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 
 using Azure.Messaging.EventHubs;
@@ -9,11 +10,15 @@ namespace Booking.Hotel.BookingHandler;
 
 public class BookingEventProcessor : BackgroundService
 {
+    public const string ActivitySourceName = "ManageBooking";
     private readonly ILogger<BookingEventProcessor> _logger;
     private readonly EventProcessorClient _processor;
     private readonly BlobContainerClient _storageClient;
+    private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
-    public BookingEventProcessor(ILogger<BookingEventProcessor> logger, IConfiguration configuration)
+    public BookingEventProcessor(
+        ILogger<BookingEventProcessor> logger,
+        IConfiguration configuration)
     {
         _logger = logger;
 

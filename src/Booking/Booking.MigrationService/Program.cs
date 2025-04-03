@@ -1,6 +1,7 @@
 using Booking.Booking.Application.Common;
 using Booking.Booking.Application.Common.Infrastructure.Services;
 using Booking.Booking.MigrationService;
+using Booking.Booking.MigrationService.Services;
 using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using Microsoft.AspNetCore.Http;
@@ -14,17 +15,14 @@ builder.AddServiceDefaults();
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing.AddSource(Worker.ActivitySourceName));
 
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddPersistence(builder.Configuration);
+// Registrar la implementación NoOp del servicio de eventos
+builder.Services.AddSingleton<IDomainEventService, NoOpDomainEventService>();
 
-// Register IHttpContextAccessor
+// Usar el método específico para migraciones
+builder.Services.AddMigrationServices(builder.Configuration);
+
+// Servicios básicos necesarios
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
-builder.Services.AddSingleton<IDomainEventService, DomainEventService>();
-builder.Services.AddSingleton<IDateTime, DateTimeService>();
-builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddHostedService<Worker>();
 
