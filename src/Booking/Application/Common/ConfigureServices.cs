@@ -1,7 +1,9 @@
-﻿using Booking.Application.Common.Interfaces;
+﻿using Azure.Messaging.EventHubs.Producer;
+
+using Booking.Application.Common.Interfaces;
 using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Booking.Application.Common.Infrastructure.Services;
-using Booking.Booking.Application.TodoItems.Infrastructure.Files;
+using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using FluentValidation;
 
@@ -34,16 +36,43 @@ public static class DependencyInjection
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseNpgsql(
-                   configuration.GetConnectionString("booking"),
-                   b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
-
         services.AddScoped<IDomainEventService, DomainEventService>();
 
         services.AddTransient<IDateTime, DateTimeService>();
-        services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton(sp =>
+        {
+            var connectionString = configuration.GetConnectionString("eventhubns")
+                ?? throw new InvalidOperationException("No se encontró la cadena de conexión 'eventhubns'");
+
+            return new EventHubProducerClient(connectionString, "booking");
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<ApplicationDbContext>(options =>
+              options.UseNpgsql(
+                  configuration.GetConnectionString("booking-db"),
+                  b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+        return services;
+    }
+
+    public static IServiceCollection AddMigrationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Solo servicios necesarios para migración
+        services.AddPersistence(configuration);
+        services.AddTransient<IDateTime, DateTimeService>();
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
         return services;

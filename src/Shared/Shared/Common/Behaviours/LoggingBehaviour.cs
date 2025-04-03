@@ -25,7 +25,7 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
 
         return Task.Run(
             () => _logger.LogInformation(
-            "VerticalSlice Request: {Name} {@UserId} {@Request}",
+            "Request: {Name} {@UserId} {@Request}",
             requestName,
             userId,
             request),

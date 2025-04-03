@@ -8,10 +8,22 @@ using OpenTelemetry.Trace;
 
 namespace Booking.Booking.MigrationService
 {
-    public class Worker(
-        IServiceProvider serviceProvider,
-        IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
+    public class Worker : BackgroundService
     {
+        private readonly ILogger<Worker> _logger;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHostApplicationLifetime hostApplicationLifetime;
+
+        public Worker(
+            ILogger<Worker> logger,
+            IServiceProvider serviceProvider,
+            IHostApplicationLifetime hostApplicationLifetime)
+        {
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+            this.hostApplicationLifetime = hostApplicationLifetime;
+        }
+
         public const string ActivitySourceName = "Migrations";
         private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
@@ -21,7 +33,7 @@ namespace Booking.Booking.MigrationService
 
             try
             {
-                using var scope = serviceProvider.CreateScope();
+                using var scope = _serviceProvider.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 await RunMigrationAsync(dbContext, cancellationToken);

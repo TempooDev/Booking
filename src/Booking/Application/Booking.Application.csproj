@@ -5,6 +5,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Azure.Messaging.EventHubs" />
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="FluentValidation" />
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Common/Infrastructure/Persistence/Migrations/" />
+    <Folder Include="Booking\Infrastructure\Persistence\" />
     <Folder Include="Common\Infrastructure\Persistence\Configurations\" />
   </ItemGroup>
 </Project>

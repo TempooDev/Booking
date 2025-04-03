@@ -12,11 +12,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" />
     <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Azure.EventHubs" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../Hotel/BookingHandler/BookingHandler.csproj" />
+    <ProjectReference Include="../../Hotel/Hotel.Api/Hotel.Api.csproj" />
     <ProjectReference Include="..\..\Booking\Api\Booking.Api.csproj" />
     <ProjectReference Include="..\..\Booking\Booking.MigrationService\Booking.MigrationService.csproj" />
   </ItemGroup>

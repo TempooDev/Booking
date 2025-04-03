@@ -17,12 +17,25 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(
 
 // Register the Swagger generator, defining 1 or more Swagger documents
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "VSA Todo API", Version = "v1" }));
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Booking API",
+        Version = "v1",
+        Description = "API para gestión de reservas",
+    });
 
+    // Configurar grupos de endpoints
+    c.TagActionsBy(api => new[] { api.GroupName });
+    c.DocInclusionPredicate((name, api) => true);
+});
 builder.Services.AddProblemDetails();
 
 builder.Services.AddApplication();
+builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddMessaging(builder.Configuration);
 
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpContextAccessor();
@@ -39,6 +52,9 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
     options.RoutePrefix = string.Empty;
+    options.DocumentTitle = "Booking API Documentation";
+    options.DisplayOperationId();
+    options.DisplayRequestDuration();
 });
 
 app.UseCors();

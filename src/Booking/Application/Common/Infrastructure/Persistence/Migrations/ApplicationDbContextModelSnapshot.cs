@@ -22,13 +22,17 @@ namespace Booking.Booking.Application.Common.Infrastructure.Persistence.Migratio
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Booking.Booking.Application.TodoItems.Domain.TodoItem", b =>
+            modelBuilder.Entity("Booking.Booking.Application.Booking.Domain.BookingItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<decimal?>("AmountPaid")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("Cancelled")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -36,8 +40,11 @@ namespace Booking.Booking.Application.Common.Infrastructure.Persistence.Migratio
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Done")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
@@ -45,98 +52,39 @@ namespace Booking.Booking.Application.Common.Infrastructure.Persistence.Migratio
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("ListId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Note")
+                    b.Property<string>("Location")
                         .HasColumnType("text");
 
-                    b.Property<int>("Priority")
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumberOfGuests")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Paid")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("Reminder")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<string>("RoomType")
+                        .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("SellerId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("ListId");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.ToTable("TodoItems", (string)null);
-                });
-
-            modelBuilder.Entity("Booking.Booking.Application.TodoLists.Domain.TodoList", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("TodoLists", (string)null);
-                });
-
-            modelBuilder.Entity("Booking.Booking.Application.TodoItems.Domain.TodoItem", b =>
-                {
-                    b.HasOne("Booking.Booking.Application.TodoLists.Domain.TodoList", "List")
-                        .WithMany("Items")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("List");
-                });
-
-            modelBuilder.Entity("Booking.Booking.Application.TodoLists.Domain.TodoList", b =>
-                {
-                    b.OwnsOne("Booking.Booking.Application.TodoItems.Domain.ValueObjects.Colour", "Colour", b1 =>
-                        {
-                            b1.Property<int>("TodoListId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Code")
-                                .HasMaxLength(7)
-                                .HasColumnType("character varying(7)")
-                                .HasColumnName("ColourCode");
-
-                            b1.HasKey("TodoListId");
-
-                            b1.ToTable("TodoLists");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TodoListId");
-                        });
-
-                    b.Navigation("Colour")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Booking.Booking.Application.TodoLists.Domain.TodoList", b =>
-                {
-                    b.Navigation("Items");
+                    b.ToTable("Bookings");
                 });
 #pragma warning restore 612, 618
         }
