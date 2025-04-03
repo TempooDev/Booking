@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
@@ -17,14 +20,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+    <ProjectReference Include="../../Shared/Shared/Shared.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Common/Infrastructure/Services/" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common/Infrastructure/Persistence/Migrations/" />
-    <Folder Include="Booking\Infrastructure\Persistence\" />
-    <Folder Include="Common\Infrastructure\Persistence\Configurations\" />
-  </ItemGroup>
 </Project>

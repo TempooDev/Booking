@@ -46,6 +46,7 @@ public class BookingItem : AuditableEntity, IHasDomainEvent
     public BookingItem()
     {
         Status = BookingStatus.Pending;
+        DomainEvents.Add(new BookingCreatedEvent(this));
     }
 
     public void ConfirmBooking()

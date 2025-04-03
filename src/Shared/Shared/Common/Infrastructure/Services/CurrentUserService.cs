@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 using Shared.Common.Interfaces;
 
-namespace Booking.Booking.Application.Common.Infrastructure.Services;
+namespace Booking.Shared.Application.Common.Infrastructure.Services;
 
 public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {

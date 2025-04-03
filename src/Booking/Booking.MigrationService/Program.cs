@@ -1,13 +1,9 @@
 using Booking.Booking.Application.Common;
-using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Booking.Application.Common.Infrastructure.Services;
 using Booking.Booking.MigrationService;
-
-using MediatR;
+using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 using Shared.Common.Interfaces;
 
@@ -19,6 +15,7 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing.AddSource(Worker.ActivitySourceName));
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddPersistence(builder.Configuration);
 
 // Register IHttpContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
