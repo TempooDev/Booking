@@ -72,7 +72,7 @@ public class BookingItem : AuditableEntity, IHasDomainEvent
         return (EndTime - StartTime).Days;
     }
 
-    public List<DomainEvent> DomainEvents { get; } = [];
+    public List<DomainEvent> DomainEvents { get; } = new List<DomainEvent>();
 }
 
 public record BookingRecord(Guid BookingId, Guid CustomerId, Guid SellerId, DateTime StartTime, DateTime EndTime, int NumberOfGuests);
