@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Processor;
@@ -95,6 +97,31 @@ public class BookingEventProcessor : BackgroundService
             {
                 var eventBody = args.Data.EventBody.ToString();
                 _logger.LogInformation("Procesando evento: {EventBody}", eventBody);
+
+                // Generar un nombre único para el blob
+                var blobName = $"{DateTime.UtcNow:yyyy/MM/dd/HH-mm-ss}-{Guid.NewGuid()}.json";
+
+                var blobClient = _storageClient.GetBlobClient(blobName);
+
+                // Crear un objeto con metadatos adicionales
+                var eventData = new
+                {
+                    Timestamp = DateTime.UtcNow,
+                    EventBody = eventBody,
+                    PartitionId = args.Partition.PartitionId,
+                    Offset = args.Data.Offset,
+                    SequenceNumber = args.Data.SequenceNumber,
+                };
+
+                // Convertir a JSON
+                var jsonContent = JsonSerializer.Serialize(
+                    eventData);
+
+                // Subir el contenido JSON al blob
+                using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonContent)))
+                {
+                    await blobClient.UploadAsync(stream, overwrite: true);
+                }
 
                 // Marcar el evento como procesado
                 await args.UpdateCheckpointAsync(args.CancellationToken);
