@@ -1,0 +1,15 @@
+{
+    "RoslynExtensionsOptions": {
+        "enableAnalyzersSupport": true,
+         "enableImportCompletion": true
+    },
+    "FormattingOptions": {
+        "enableEditorConfigSupport": true
+    },
+    "FileOptions": {
+        "excludeSearchPatterns": [
+            "**/bin/**/*",
+            "**/obj/**/*"
+        ]
+    }
+}
