@@ -1,12 +1,11 @@
-using Azure.Messaging.EventHubs.Consumer;
-using Azure.Messaging.EventHubs.Producer;
-
 using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Shared.Common.Behaviours;
 using Shared.Common.Interfaces;
@@ -37,11 +36,14 @@ public static class DependencyInjection
         services.AddTransient<IDateTime, DateTimeService>();
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
-        services.AddSingleton(sp =>
-            {
-                var configuration = sp.GetRequiredService<IConfiguration>();
-                return new EventHubConsumerClient("booking", configuration.GetConnectionString("booking_hub"));
-            });
+
         return services;
+    }
+
+    public static WebApplicationBuilder AddMessaging(this WebApplicationBuilder builder)
+    {
+        builder.AddAzureServiceBusClient(connectionName: "serviceBus");
+
+        return builder;
     }
 }

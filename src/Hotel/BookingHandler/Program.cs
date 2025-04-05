@@ -1,21 +1,30 @@
 using Booking.Hotel.BookingHandler;
 
+using Microsoft.Extensions.Azure;
+
 var builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing.AddSource(BookingEventProcessor.ActivitySourceName));
 
-// Añadir configuración por defecto de Aspire
 // Configurar logging
-builder.Services.AddLogging(logging =>
+builder.Services.AddLogging();
+
+builder.Services.AddAzureClients(clientBuilder =>
 {
-    logging.AddConsole();
-    logging.AddDebug();
-    logging.AddFilter("Azure.Messaging.EventHubs", LogLevel.Debug);
+    clientBuilder.AddBlobServiceClient(builder.Configuration.GetConnectionString("booking-blobs"));
+    clientBuilder.AddServiceBusClient(builder.Configuration.GetConnectionString("servicebus"));
 });
 
-// Registrar el worker como servicio hosteado
+// Add BlobContainerClient registration
+builder.Services.AddSingleton(sp =>
+{
+    var blobServiceClient = sp.GetRequiredService<Azure.Storage.Blobs.BlobServiceClient>();
+    var containerName = "bookings-blobs"; // Replace with your actual container name
+    return blobServiceClient.GetBlobContainerClient(containerName);
+});
+
 builder.Services.AddHostedService<BookingEventProcessor>();
 
 var host = builder.Build();

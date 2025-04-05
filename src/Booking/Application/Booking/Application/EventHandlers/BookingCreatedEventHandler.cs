@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 
-using Azure.Messaging.EventHubs;
-using Azure.Messaging.EventHubs.Producer;
+using Azure.Messaging.ServiceBus;
 
 using Booking.Booking.Application.Booking.Domain.Events;
 
@@ -13,44 +12,46 @@ using Shared.Common.Models;
 
 namespace Booking.Booking.Application.Booking.Application.EventHandlers;
 
-internal sealed class BookingCreatedEventHandler(ILogger<BookingCreatedEventHandler> logger, EventHubProducerClient eventHubClient) : INotificationHandler<DomainEventNotification<BookingCreatedEvent>>
+internal sealed class BookingCreatedEventHandler : INotificationHandler<DomainEventNotification<BookingCreatedEvent>>
 {
-    private readonly ILogger<BookingCreatedEventHandler> _logger = logger;
+    private readonly ILogger<BookingCreatedEventHandler> _logger;
+    private readonly ServiceBusSender _serviceBusSender;
+    private readonly string _topicName = "booking";
 
-    private readonly EventHubProducerClient _eventHubClient = eventHubClient;
+    public BookingCreatedEventHandler(ILogger<BookingCreatedEventHandler> logger, ServiceBusClient serviceBusClient)
+    {
+        _logger = logger;
+        _serviceBusSender = serviceBusClient.CreateSender(_topicName);
+    }
+
     public async Task Handle(DomainEventNotification<BookingCreatedEvent> notification, CancellationToken ct)
     {
         var domainEvent = notification.DomainEvent;
         try
         {
-            _logger.LogInformation("Iniciando envío de evento BookingCreated. Detalles del evento: {@Event}", domainEvent);
+            _logger.LogInformation("Iniciando envío de evento BookingCreated a Service Bus. Detalles del evento: {@Event}", domainEvent);
 
-            // Primero verificamos la conexión del cliente
-            _logger.LogDebug("EventHub Client configurado para: {FullyQualifiedNamespace}", _eventHubClient.FullyQualifiedNamespace);
+            var messageBody = JsonSerializer.Serialize(domainEvent);
 
-            // Creamos el evento con más metadatos para mejor trazabilidad
-            var eventData = new EventData(JsonSerializer.SerializeToUtf8Bytes(domainEvent));
-            eventData.Properties.Add("eventType", "BookingCreated");
-            eventData.Properties.Add("timestamp", DateTime.UtcNow.ToString("o"));
-            eventData.Properties.Add("eventId", Guid.NewGuid().ToString());
-            eventData.Properties.Add("source", "BookingService");
+            var message = new ServiceBusMessage(messageBody)
+            {
+                Subject = "BookingCreated",
+            };
 
-            _logger.LogDebug("Evento preparado para envío: {@EventProperties}", eventData.Properties);
+            message.ApplicationProperties.Add("eventType", "BookingCreated");
+            message.ApplicationProperties.Add("timestamp", DateTime.UtcNow.ToString("o"));
+            message.ApplicationProperties.Add("eventId", Guid.NewGuid().ToString());
+            message.ApplicationProperties.Add("source", "BookingService");
 
-            // Enviamos directamente sin batch para simplificar y asegurar el envío
-            await _eventHubClient.SendAsync(new[] { eventData }, ct);
+            _logger.LogDebug("Mensaje de Service Bus preparado para envío: {@Message}", message);
 
-            _logger.LogInformation(
-                "Evento BookingCreated enviado exitosamente. EventId: {EventId}",
-                eventData.Properties["eventId"]);
+            await _serviceBusSender.SendMessageAsync(message, ct);
+
+            _logger.LogInformation("Evento BookingCreated enviado exitosamente a Service Bus. EventId: {EventId}", message.ApplicationProperties["eventId"]);
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Error al enviar evento BookingCreated. Namespace: {Namespace}, EventHub: {EventHub}",
-                _eventHubClient.FullyQualifiedNamespace,
-                _eventHubClient.EventHubName);
+            _logger.LogError(ex, "Error al enviar evento BookingCreated a Service Bus. Topic: {TopicName}", _topicName);
             throw;
         }
     }

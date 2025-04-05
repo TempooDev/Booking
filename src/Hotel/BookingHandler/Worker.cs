@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-using Azure.Messaging.EventHubs;
-using Azure.Messaging.EventHubs.Consumer;
-using Azure.Messaging.EventHubs.Processor;
+using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 
 namespace Booking.Hotel.BookingHandler;
@@ -12,48 +10,34 @@ public class BookingEventProcessor : BackgroundService
 {
     public const string ActivitySourceName = "ManageBooking";
     private readonly ILogger<BookingEventProcessor> _logger;
-    private readonly EventProcessorClient _processor;
-    private readonly BlobContainerClient _storageClient;
+    private readonly ServiceBusProcessor _processor;
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
+    private readonly BlobContainerClient _blobContainerClient;
 
     public BookingEventProcessor(
         ILogger<BookingEventProcessor> logger,
-        IConfiguration configuration)
+        ServiceBusClient serviceBusClient,
+        BlobContainerClient blobContainerClient)
     {
         _logger = logger;
 
         try
         {
-            // Configuración del procesador de eventos
-            var ehubNamespace = configuration.GetConnectionString("eventhubns")
-                ?? "Endpoint=sb://localhost;SharedAccessKeyName=admin;SharedAccessKey=admin;EntityPath=booking";
-
-            _logger.LogInformation("Usando Event Hub connection string: {ConnectionString}", ehubNamespace);
-
-            // Usar Azure Storage Emulator para desarrollo local
-            var storageConnString = configuration.GetConnectionString("storage");
-            var blobContainerName = "booking-events-checkpoint";
-
-            _storageClient = new BlobContainerClient(storageConnString, blobContainerName);
-            _logger.LogInformation("Creando Event Processor Client...");
-            _logger.LogInformation("Creando Event Processor Client...");
-
-            // Crear el procesador de eventos
-            _processor = new EventProcessorClient(
-                _storageClient,
-                EventHubConsumerClient.DefaultConsumerGroupName,
-                ehubNamespace,
-                "booking");
+            var topicName = "booking";
+            _processor = serviceBusClient.CreateProcessor(topicName, new ServiceBusProcessorOptions());
 
             // Registrar handlers
-            _processor.ProcessEventAsync += ProcessEventHandler;
+            _processor.ProcessMessageAsync += ProcessMessageHandler;
             _processor.ProcessErrorAsync += ProcessErrorHandler;
 
-            _logger.LogInformation("Event Processor Client creado exitosamente");
+            _logger.LogInformation("Service Bus Processor creado exitosamente");
+
+            _blobContainerClient = blobContainerClient;
+            _blobContainerClient.CreateIfNotExists();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al inicializar el Event Processor Client");
+            _logger.LogError(ex, "Error al inicializar el Service Bus Processor");
             throw;
         }
     }
@@ -70,15 +54,8 @@ public class BookingEventProcessor : BackgroundService
         try
         {
             _logger.LogInformation("Iniciando procesador de eventos de Booking en Hotel Service...");
-            if (_storageClient != null)
-            {
-                if (_storageClient != null)
-                {
-                    await _storageClient.CreateIfNotExistsAsync(cancellationToken: stoppingToken);
-                    _logger.LogInformation("Contenedor de checkpoint creado/verificado");
-                }
-            }
 
+            // start processing
             await _processor.StartProcessingAsync(stoppingToken);
             _logger.LogInformation("Procesador de eventos iniciado");
 
@@ -94,44 +71,30 @@ public class BookingEventProcessor : BackgroundService
         }
     }
 
-    private async Task ProcessEventHandler(ProcessEventArgs args)
+    private async Task ProcessMessageHandler(ProcessMessageEventArgs args)
     {
         try
         {
-            if (args.Data != null)
+            string body = args.Message.Body.ToString();
+            _logger.LogInformation("Procesando mensaje: {Body}", body);
+
+            // Crear un nombre de blob único
+            string blobName = $"{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}_{Guid.NewGuid()}.json";
+            BlobClient blobClient = _blobContainerClient.GetBlobClient(blobName);
+
+            // Serializar el mensaje a JSON
+            string jsonMessage = JsonSerializer.Serialize(new { Body = body });
+
+            // Subir el mensaje al blob storage
+            using (MemoryStream stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonMessage)))
             {
-                var eventBody = args.Data.EventBody.ToString();
-                _logger.LogInformation("Procesando evento: {EventBody}", eventBody);
-
-                // Generar un nombre único para el blob
-                var blobName = $"{DateTime.UtcNow:yyyy/MM/dd/HH-mm-ss}-{Guid.NewGuid()}.json";
-
-                var blobClient = _storageClient.GetBlobClient(blobName);
-
-                // Crear un objeto con metadatos adicionales
-                var eventData = new
-                {
-                    Timestamp = DateTime.UtcNow,
-                    EventBody = eventBody,
-                    PartitionId = args.Partition.PartitionId,
-                    Offset = args.Data.Offset,
-                    SequenceNumber = args.Data.SequenceNumber,
-                };
-
-                // Convertir a JSON
-                var jsonContent = JsonSerializer.Serialize(
-                    eventData);
-
-                // Subir el contenido JSON al blob
-                using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonContent)))
-                {
-                    await blobClient.UploadAsync(stream, overwrite: true);
-                }
-
-                // Marcar el evento como procesado
-                await args.UpdateCheckpointAsync(args.CancellationToken);
-                _logger.LogInformation("Evento procesado y checkpoint actualizado");
+                await blobClient.UploadAsync(stream, overwrite: true);
             }
+
+            _logger.LogInformation("Mensaje guardado en Blob Storage: {blobName}", blobName);
+
+            // Confirmar el mensaje
+            await args.CompleteMessageAsync(args.Message);
         }
         catch (Exception ex)
         {
