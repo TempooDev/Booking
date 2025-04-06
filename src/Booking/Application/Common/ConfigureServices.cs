@@ -42,16 +42,12 @@ public static class DependencyInjection
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
-        services.AddAzureClients(clientBuilder =>
-            {
-                clientBuilder.AddServiceBusClient(configuration.GetConnectionString("servicebus"));
-            });
         return services;
     }
 
     public static WebApplicationBuilder AddMessaging(this WebApplicationBuilder builder)
     {
-        builder.AddAzureServiceBusClient(connectionName: "serviceBus");
+        builder.AddAzureServiceBusClient(connectionName: "hotel");
 
         return builder;
     }

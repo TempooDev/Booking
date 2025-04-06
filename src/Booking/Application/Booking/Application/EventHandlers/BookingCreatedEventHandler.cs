@@ -49,6 +49,10 @@ internal sealed class BookingCreatedEventHandler : INotificationHandler<DomainEv
 
             _logger.LogInformation("Evento BookingCreated enviado exitosamente a Service Bus. EventId: {EventId}", message.ApplicationProperties["eventId"]);
         }
+        catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceCommunicationProblem)
+        {
+            _logger.LogError(ex, "Error de comunicación con Service Bus al enviar evento BookingCreated. Topic: {TopicName}", _topicName);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al enviar evento BookingCreated a Service Bus. Topic: {TopicName}", _topicName);
