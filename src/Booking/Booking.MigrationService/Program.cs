@@ -5,6 +5,7 @@ using Booking.Booking.MigrationService.Services;
 using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Azure;
 
 using Shared.Common.Interfaces;
 

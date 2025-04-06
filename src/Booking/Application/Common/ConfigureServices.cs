@@ -1,15 +1,15 @@
-﻿using Azure.Messaging.EventHubs.Producer;
-
-using Booking.Application.Common.Interfaces;
-using Booking.Booking.Application.Common.Infrastructure.Persistence;
+﻿using Booking.Booking.Application.Common.Infrastructure.Persistence;
 using Booking.Booking.Application.Common.Infrastructure.Services;
 using Booking.Shared.Application.Common.Infrastructure.Services;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Shared.Common.Behaviours;
 using Shared.Common.Interfaces;
@@ -45,17 +45,11 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder AddMessaging(this WebApplicationBuilder builder)
     {
-        services.AddSingleton(sp =>
-        {
-            var connectionString = configuration.GetConnectionString("eventhubns")
-                ?? throw new InvalidOperationException("No se encontró la cadena de conexión 'eventhubns'");
+        builder.AddAzureServiceBusClient(connectionName: "hotel");
 
-            return new EventHubProducerClient(connectionString, "booking");
-        });
-
-        return services;
+        return builder;
     }
 
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
