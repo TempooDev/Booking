@@ -36,6 +36,7 @@ internal sealed class BookingCreatedEventHandler : INotificationHandler<DomainEv
             var message = new ServiceBusMessage(messageBody)
             {
                 Subject = "BookingCreated",
+                ContentType = "application/json",
             };
 
             message.ApplicationProperties.Add("eventType", "BookingCreated");
