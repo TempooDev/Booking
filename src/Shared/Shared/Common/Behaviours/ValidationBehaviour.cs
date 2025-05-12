@@ -20,14 +20,14 @@ public class ValidationBehaviour<TRequest, TResponse>(IValidator<TRequest>? vali
     {
         if (_validator is null)
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (validationResult.IsValid)
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var errors = validationResult.Errors

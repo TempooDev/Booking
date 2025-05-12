@@ -1,3 +1,4 @@
+using Booking.Api;
 using Booking.Booking.Application.Common;
 
 using Microsoft.OpenApi.Models;
@@ -26,8 +27,21 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API para gestión de reservas",
     });
 
-    // Configurar grupos de endpoints
-    c.TagActionsBy(api => new[] { api.GroupName });
+    // Updated Swagger configuration to handle both controller and minimal API endpoints
+    c.TagActionsBy(api =>
+    {
+        if (api.GroupName != null)
+        {
+            return new[] { api.GroupName };
+        }
+
+        if (api.ActionDescriptor.EndpointMetadata.OfType<TagsAttribute>().FirstOrDefault() is TagsAttribute tagAttr)
+        {
+            return tagAttr.Tags.ToArray();
+        }
+
+        return new[] { api.ActionDescriptor.RouteValues["controller"] ?? "Default" };
+    });
     c.DocInclusionPredicate((name, api) => true);
 });
 builder.Services.AddProblemDetails();
@@ -72,8 +86,11 @@ else
 }
 
 app.UseAuthorization();
+
+// Register minimal API endpoints
+app.MapBookingEndpoints();
+
+// Keep existing controller endpoints for backward compatibility
 app.MapControllers();
 
 app.Run();
-
-public partial class Program { }

@@ -32,6 +32,6 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         }
 
         // User is authorized / authorization not required
-        return next();
+        return next(cancellationToken);
     }
 }
