@@ -15,9 +15,7 @@ var blobs = storage.AddBlobs("bookings-blobs");
 var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>("booking-migrationservice")
     .WithReference(bookingDb)
     .WaitFor(sqlServer)
-    .WaitFor(bookingDb)
-    .WithReference(blobs)
-    .WaitFor(blobs);
+    .WaitFor(bookingDb);
 
 var bookingApi = builder.AddProject<Projects.Booking_Api>("booking-api")
     .WithReference(bookingDb)
@@ -40,5 +38,7 @@ builder.AddAzureFunctionsProject<Projects.Hotel_EventConsumer>("hotel-eventconsu
     .WaitFor(messaging)
     .WithReference(blobs)
     .WaitFor(blobs);
+
+builder.AddAzureFunctionsProject<Projects.Hotel_Api>("hotel-api");
 
 builder.Build().Run();

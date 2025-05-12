@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../Hotel/Hotel.Api/Hotel.Api.csproj" />
+    <ProjectReference Include="..\..\..\Hotel.Api\Hotel.Api.csproj" />
     <ProjectReference Include="..\..\Booking\Api\Booking.Api.csproj" />
     <ProjectReference Include="..\..\Booking\Booking.MigrationService\Booking.MigrationService.csproj" />
     <ProjectReference Include="..\..\Hotel\Hotel.EventConsumer\Hotel.EventConsumer.csproj" />

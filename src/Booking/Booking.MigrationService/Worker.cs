@@ -40,7 +40,12 @@ namespace Booking.Booking.MigrationService
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
+                activity?.AddEvent(new ActivityEvent("Exception", default, new ActivityTagsCollection
+                {
+                    { "exception.type", ex.GetType().FullName },
+                    { "exception.message", ex.Message },
+                    { "exception.stacktrace", ex.StackTrace },
+                }));
                 throw;
             }
 
