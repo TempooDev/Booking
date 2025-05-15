@@ -5,20 +5,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Hotel.Api;
 
-public class Function1
+public class GetCurrentBookings
 {
-    private readonly ILogger<Function1> _logger;
+    private readonly ILogger<GetCurrentBookings> _logger;
 
-    public Function1(ILogger<Function1> logger)
+    public GetCurrentBookings(ILogger<GetCurrentBookings> logger)
     {
         _logger = logger;
     }
 
-    [Function("Function1")]
+    [Function("GetCurrentBookings")]
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
         return new OkObjectResult("Welcome to Azure Functions!");
     }
 }
-
