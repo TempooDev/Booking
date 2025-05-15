@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Shared.Common.Behaviours;
 using Shared.Common.Interfaces;
 
-namespace Booking.Hotel.Application.Common;
+namespace Booking.Hotel.Core.Common;
 
 public static class DependencyInjection
 {

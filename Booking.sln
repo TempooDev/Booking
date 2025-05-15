@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booking.MigrationService", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hotel", "Hotel", "{B69D4932-B69C-C5FD-D01F-9345BB4E094F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hotel.Core", "src\Hotel\Hotel.Application\Hotel.Core.csproj", "{D5609AA6-75F8-40A4-B6D3-C4ECA3B0F840}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hotel.Core", "src\Hotel\Hotel.Core\Hotel.Core.csproj", "{D5609AA6-75F8-40A4-B6D3-C4ECA3B0F840}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hotel.EventConsumer", "src\Hotel\Hotel.EventConsumer\Hotel.EventConsumer.csproj", "{328B5BA4-1BBC-4438-BFC6-F16D406E5489}"
 EndProject

@@ -21,3 +21,4 @@ public class Function1
         return new OkObjectResult("Welcome to Azure Functions!");
     }
 }
+

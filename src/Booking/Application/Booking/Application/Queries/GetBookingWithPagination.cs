@@ -16,21 +16,6 @@ using Shared.Common.Models;
 
 namespace Booking.Booking.Application.Booking.Application.Queries;
 
-[ApiController]
-[Route($"{ApiPaths.Root}/[controller]")]
-[ApiExplorerSettings(GroupName = ApiPaths.Booking)]
-public class GetBookingWithPaginationController : ApiControllerBase
-{
-    [HttpGet]
-    public async Task<IActionResult> GetBookingWithPagination([FromQuery] GetBookingWithPaginationQuery query)
-    {
-        var result = await Mediator.Send(query);
-        return result.Match(
-            Ok,
-            Problem);
-    }
-}
-
 public record BookingBriefResponse(Guid Id, Guid CustomerId, Guid SellerId, Guid ProductId, string? Location, DateTime StartTime, DateTime EndTime, int NumberOfGuests, string? RoomType, string? Notes);
 public record GetBookingWithPaginationQuery(Guid? BookingId, Guid? CustomerId, Guid? SellerId, Guid? ProductId, int PageNumber = 1, int PageSize = 10) : IRequest<ErrorOr<PaginatedList<BookingBriefResponse>>>;
 

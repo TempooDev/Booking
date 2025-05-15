@@ -19,21 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Booking.Booking.Application.Booking.Application.Commands;
 
-[ApiController]
-[Route($"{ApiPaths.Root}/[controller]")]
-[ApiExplorerSettings(GroupName = ApiPaths.Booking)]
-public class CreateBookingController : ApiControllerBase
-{
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateBookingCommand command)
-    {
-        var result = await Mediator.Send(command);
-        return result.Match(
-            id => Ok(id),
-            Problem);
-    }
-}
-
 public record CreateBookingCommand(Guid CustomerId, Guid SellerId, Guid ProductId, string? Location, DateTime StartTime, DateTime EndTime, int NumberOfGuests, string? RoomType, string? Notes) : IRequest<ErrorOr<Guid>>;
 
 internal sealed class CreateBookingCommandValidator : AbstractValidator<CreateBookingCommand>
