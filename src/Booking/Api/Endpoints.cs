@@ -1,12 +1,11 @@
-using Booking.Booking.Application.Booking.Application.Commands;
-using Booking.Booking.Application.Booking.Application.Queries;
-using Booking.Booking.Application.Common;
-using ErrorOr;
+using Booking.Core.Booking.Application.Commands;
+using Booking.Core.Booking.Application.Queries;
+using Booking.Core.Booking.Domain;
+using Booking.Core.Common;
+
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
-using Shared.Common.Models;
 
 namespace Booking.Api;
 
@@ -29,7 +28,62 @@ public static class Endpoints
         .WithDescription("Creates a new booking")
         .WithSummary("Create a new booking");
 
-        // GetBookingWithPagination endpoint - Fix parameter binding
+        // UpdateBooking endpoint
+        bookingGroup.MapPut("/{bookingId}", async (
+            ISender mediator,
+            [FromRoute] Guid bookingId,
+            [FromBody] UpdateBookingCommand command,
+            CancellationToken cancellationToken) =>
+        {
+            // Ensure the route parameter matches the command parameter
+            if (bookingId != command.BookingId)
+            {
+                return Results.BadRequest("Route bookingId and command BookingId must match");
+            }
+
+            var result = await mediator.Send(command, cancellationToken);
+            return result.Match(
+                id => Results.Ok(id),
+                errors => Results.Problem(string.Join("; ", errors.Select(e => e.Description))));
+        })
+        .WithName("UpdateBooking")
+        .WithDescription("Updates an existing booking")
+        .WithSummary("Update booking details");
+
+        // GetBookingById endpoint
+        bookingGroup.MapGet("/{bookingId}", async (
+            ISender mediator,
+            [FromRoute] Guid bookingId,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetBookingByIdQuery(bookingId);
+            var result = await mediator.Send(query, cancellationToken);
+            return result.Match(
+                booking => Results.Ok(booking),
+                errors => Results.Problem(string.Join("; ", errors.Select(e => e.Description))));
+        })
+        .WithName("GetBookingById")
+        .WithDescription("Gets booking details by ID")
+        .WithSummary("Get a specific booking");
+
+        // ChangeStatusBooking endpoint
+        bookingGroup.MapPatch("/{bookingId}/status", async (
+            ISender mediator,
+            [FromRoute] Guid bookingId,
+            [FromBody] BookingStatus status,
+            CancellationToken cancellationToken) =>
+        {
+            var command = new ChangeStatusBookingCommand(bookingId, status);
+            var result = await mediator.Send(command, cancellationToken);
+            return result.Match(
+                success => Results.Ok(success),
+                errors => Results.Problem(string.Join("; ", errors.Select(e => e.Description))));
+        })
+        .WithName("ChangeBookingStatus")
+        .WithDescription("Changes the status of a booking")
+        .WithSummary("Update booking status");
+
+        // GetBookingWithPagination endpoint
         bookingGroup.MapGet("/", async (
             ISender mediator,
             [FromQuery] Guid? bookingId,

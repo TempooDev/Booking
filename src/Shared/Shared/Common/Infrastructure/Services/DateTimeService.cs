@@ -1,6 +1,6 @@
 ﻿using Shared.Common.Interfaces;
 
-namespace Booking.Shared.Application.Common.Infrastructure.Services;
+namespace Shared.Common.Infrastructure.Services;
 
 public class DateTimeService : IDateTime
 {

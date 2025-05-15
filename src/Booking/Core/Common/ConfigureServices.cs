@@ -1,6 +1,11 @@
+﻿using Booking.Core.Common.Infrastructure.Persistence;
+using Booking.Core.Common.Infrastructure.Services;
+
 using FluentValidation;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +14,7 @@ using Shared.Common.Behaviours;
 using Shared.Common.Infrastructure.Services;
 using Shared.Common.Interfaces;
 
-namespace Booking.Hotel.Core.Common;
+namespace Booking.Core.Common;
 
 public static class DependencyInjection
 {
@@ -31,7 +36,8 @@ public static class DependencyInjection
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IDomainEventService, DomainEventService>();
+
         services.AddTransient<IDateTime, DateTimeService>();
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
@@ -41,8 +47,28 @@ public static class DependencyInjection
 
     public static WebApplicationBuilder AddMessaging(this WebApplicationBuilder builder)
     {
-        builder.AddAzureServiceBusClient(connectionName: "serviceBus");
+        builder.AddAzureServiceBusClient(connectionName: "hotel");
 
         return builder;
+    }
+
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<ApplicationDbContext>(options =>
+              options.UseNpgsql(
+                  configuration.GetConnectionString("booking-db"),
+                  b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+        return services;
+    }
+
+    public static IServiceCollection AddMigrationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Solo servicios necesarios para migración
+        services.AddPersistence(configuration);
+        services.AddTransient<IDateTime, DateTimeService>();
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+        return services;
     }
 }

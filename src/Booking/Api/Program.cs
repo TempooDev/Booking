@@ -1,5 +1,5 @@
 using Booking.Api;
-using Booking.Booking.Application.Common;
+using Booking.Core.Common;
 
 using Microsoft.OpenApi.Models;
 

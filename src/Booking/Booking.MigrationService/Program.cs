@@ -1,11 +1,8 @@
-using Booking.Booking.Application.Common;
-using Booking.Booking.Application.Common.Infrastructure.Services;
-using Booking.Booking.MigrationService;
-using Booking.Booking.MigrationService.Services;
-using Booking.Shared.Application.Common.Infrastructure.Services;
+using Booking.Core.Common;
+using Booking.MigrationService;
+using Booking.MigrationService.Services;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Azure;
 
 using Shared.Common.Interfaces;
 

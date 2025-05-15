@@ -17,65 +17,12 @@
                 "DOTNET_WATCH_RESTART_ON_RUDE_EDIT": "true"
             }
         },
-        {
-            "name": "Booking.Api",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-with-watch",
-            "program": "dotnet",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/src/Booking/Api/Booking.Api.csproj",
-                "run",
-                "--hot-reload"
-            ],
-            "cwd": "${workspaceFolder}/src/Booking/Api",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "BookingHandler",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-with-watch",
-            "program": "dotnet",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/src/Hotel/BookingHandler/BookingHandler.csproj",
-                "run",
-                "--hot-reload"
-            ],
-            "cwd": "${workspaceFolder}/src/Hotel/BookingHandler",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
-            "name": "Booking.MigrationService",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-with-watch",
-            "program": "dotnet",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/src/Booking/Booking.MigrationService/Booking.MigrationService.csproj",
-                "run",
-                "--hot-reload"
-            ],
-            "cwd": "${workspaceFolder}/src/Booking/Booking.MigrationService",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }
     ],
     "compounds": [
         {
             "name": "Full Solution",
             "configurations": [
                 "Booking.AppHost",
-                "Booking.Api",
-                "BookingHandler"
             ]
         }
     ]
