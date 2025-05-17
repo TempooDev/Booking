@@ -6,8 +6,10 @@
     <!--ASP.NET-->
     <PackageVersion Include="Aspire.Azure.Messaging.EventHubs" Version="9.1.0" />
     <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="9.2.1" />
+    <PackageVersion Include="Aspire.Confluent.Kafka" Version="9.2.1" />
     <PackageVersion Include="Aspire.Hosting.Azure.Functions" Version="9.1.0-preview.1.25121.10" />
     <PackageVersion Include="Aspire.Hosting.Azure.ServiceBus" Version="9.2.1" />
+    <PackageVersion Include="Aspire.Hosting.Kafka" Version="9.2.1" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.2.1" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="9.2.1" />
     <PackageVersion Include="Aspire.Microsoft.Data.SqlClient" Version="9.2.1" />

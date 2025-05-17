@@ -16,6 +16,9 @@ var messaging = builder
     .AddServiceBusTopic("booking")
     .AddServiceBusSubscription("hotel");
 
+var kafka = builder.AddKafka("kafka")
+                   .WithKafkaUI();
+
 var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>("booking-migrationservice")
     .WithReference(bookingDb)
     .WaitFor(sqlServer)
