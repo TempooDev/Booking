@@ -1,5 +1,3 @@
-using Aspire.Hosting;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var sqlServer = builder.AddPostgres("sql")
@@ -12,6 +10,12 @@ var storage = builder.AddAzureStorage("storage")
                    .RunAsEmulator();
 var blobs = storage.AddBlobs("bookings-blobs");
 
+var messaging = builder
+    .AddAzureServiceBus("servicebus")
+    .RunAsEmulator()
+    .AddServiceBusTopic("booking")
+    .AddServiceBusSubscription("hotel");
+
 var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>("booking-migrationservice")
     .WithReference(bookingDb)
     .WaitFor(sqlServer)
@@ -21,13 +25,6 @@ var bookingApi = builder.AddProject<Projects.Booking_Api>("booking-api")
     .WithReference(bookingDb)
     .WaitFor(bookingDb)
     .WaitForCompletion(bookingMigration);
-
-var messaging = builder
-    .AddAzureServiceBus("servicebus")
-    .RunAsEmulator(c =>
-        c.WithLifetime(ContainerLifetime.Persistent))
-    .AddServiceBusTopic("booking")
-    .AddServiceBusSubscription("hotel");
 
 bookingApi.WithReference(messaging)
     .WaitFor(messaging);
