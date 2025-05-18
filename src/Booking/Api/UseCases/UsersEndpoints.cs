@@ -1,7 +1,10 @@
-﻿using Booking.Core.Users.Application.Commands;
+﻿using Booking.Core.Common;
+using Booking.Core.Users.Application.Commands;
 using Booking.Core.Users.Application.Queries;
 using Booking.Core.Users.Domain.Entities;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Booking.Booking.Api.UseCases;
@@ -10,9 +13,9 @@ public static class UsersEndpoints
 {
     public static IEndpointRouteBuilder MapUsersEndpoints(this IEndpointRouteBuilder app)
     {
-        var usersGroup = app.MapGroup("/api/users").WithTags("Users");
+        var usersGroup = app.MapGroup($"{ApiPaths.Root}/users").WithTags("Users");
 
-        usersGroup.MapPost("/", async (ISender mediator, [FromBody] CreateUser command) =>
+        usersGroup.MapPost("/", async (ISender mediator, [FromBody] CreateUserCommand command) =>
         {
             var result = await mediator.Send(command);
 
@@ -21,7 +24,7 @@ public static class UsersEndpoints
                 return Results.BadRequest(result.Errors);
             }
 
-            return Results.Created($"/api/users/{result.Value}", result.Value);
+            return Results.Created($"{ApiPaths.Root}/users/{result.Value}", result.Value);
         })
         .WithName("CreateUser")
         .WithDescription("Creates a new user")

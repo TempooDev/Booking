@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 
 using Booking.Core.Users.Application.Commands;
+using Booking.Core.Users.Domain.Entities;
 using Booking.Web.Models;
 
 using static Booking.Common.Errors.Errors;
@@ -17,6 +18,7 @@ public class BookingApiService : IBookingApiService
     public BookingApiService(HttpClient httpClient, ILogger<BookingApiService> logger)
     {
         _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("https://localhost:7098/api/v1");
         _logger = logger;
         _jsonOptions = new JsonSerializerOptions
         {
@@ -256,14 +258,15 @@ public class BookingApiService : IBookingApiService
 
     public async Task<Guid?> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
     {
-        CreateUser user = new
-        (
-            createUserDto.FirstName + createUserDto.LastName,
-            createUserDto.Email,
-            createUserDto.Role,
-            createUserDto.PreferredPaymentMethod,
-            null,
-            null);
+        CreateUserCommand user = new CreateUserCommand(
+            Name: $"{createUserDto.FirstName} {createUserDto.LastName}",
+            FirstName: createUserDto.FirstName,
+            LastName: createUserDto.LastName,
+            Email: createUserDto.Email,
+            Role: createUserDto.Role,
+            PreferredPaymentMethod: createUserDto.PreferredPaymentMethod,
+            Rating: createUserDto.Role == UserRole.Seller ? 0 : null, // Default rating for sellers
+            StoreName: createUserDto.Role == UserRole.Seller ? "Default Store" : null); // Default store name for sellers
 
         try
         {

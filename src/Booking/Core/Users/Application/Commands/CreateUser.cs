@@ -6,15 +6,17 @@ using MediatR;
 
 namespace Booking.Core.Users.Application.Commands;
 
-public record CreateUser(
+public record CreateUserCommand(
     string Name,
+    string FirstName,
+    string LastName,
     string Email,
     UserRole Role,
     string? PreferredPaymentMethod = null,
     string? StoreName = null,
     double? Rating = null) : IRequest<ErrorOr<Guid>>;
 
-public sealed class CreateUserCommandHandler : IRequestHandler<CreateUser, ErrorOr<Guid>>
+public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ErrorOr<Guid>>
 {
     private readonly IUserRepository _userRepository;
 
@@ -23,7 +25,7 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUser, Error
         _userRepository = userRepository;
     }
 
-    public async Task<ErrorOr<Guid>> Handle(CreateUser request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         User user;
 
@@ -32,6 +34,8 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUser, Error
             user = new Buyer
             {
                 Name = request.Name,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 Email = request.Email,
                 PreferredPaymentMethod = request.PreferredPaymentMethod,
             };
@@ -41,6 +45,8 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUser, Error
             user = new Seller
             {
                 Name = request.Name,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 Email = request.Email,
                 StoreName = request.StoreName,
                 Rating = request.Rating,
@@ -56,11 +62,15 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUser, Error
     }
 }
 
-internal sealed class CreateUserCommandValidator : AbstractValidator<CreateUser>
+internal sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserCommandValidator()
     {
-        RuleFor(v => v.Name)
+        RuleFor(v => v.FirstName)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(v => v.LastName)
             .NotEmpty()
             .MaximumLength(100);
         RuleFor(v => v.Email)
