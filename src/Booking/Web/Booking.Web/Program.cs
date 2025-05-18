@@ -10,14 +10,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IBookingApiService, BookingApiService>();
 
 // Register the unified BookingApiClient
-builder.Services.AddHttpClient<BookingApiService>(client =>
-{
-    var bookingApiBaseUrl = Environment.GetEnvironmentVariable("BOOKING_API_URL")
-                            ?? builder.Configuration["BookingApi:BaseUrl"]
-                            ?? "https://localhost:7098/api/v1";
-    client.BaseAddress = new Uri(bookingApiBaseUrl);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-});
+builder.Services.AddHttpClient<BookingApiService>(client => client.BaseAddress = new Uri("https+http://booking-api"));
+
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
