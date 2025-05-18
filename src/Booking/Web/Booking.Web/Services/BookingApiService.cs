@@ -1,7 +1,10 @@
 using System.Net;
 using System.Text.Json;
 
+using Booking.Core.Users.Application.Commands;
 using Booking.Web.Models;
+
+using static Booking.Common.Errors.Errors;
 
 namespace Booking.Web.Services;
 
@@ -26,7 +29,8 @@ public class BookingApiService : IBookingApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"booking/{bookingId}", cancellationToken);
+            var url = _httpClient.BaseAddress + $"/booking/{bookingId}"; // Add missing semicolon
+            var response = await _httpClient.GetAsync(url, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -90,7 +94,7 @@ public class BookingApiService : IBookingApiService
             queryParams.Add($"pageSize={pageSize}");
 
             var queryString = string.Join("&", queryParams);
-            var url = $"booking?{queryString}";
+            var url = _httpClient.BaseAddress + $"/booking?{queryString}";
 
             var response = await _httpClient.GetAsync(url, cancellationToken);
 
@@ -117,7 +121,8 @@ public class BookingApiService : IBookingApiService
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("booking", booking, _jsonOptions, cancellationToken);
+            var url = _httpClient.BaseAddress + "/booking";
+            var response = await _httpClient.PostAsJsonAsync(url, booking, _jsonOptions, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -143,7 +148,8 @@ public class BookingApiService : IBookingApiService
     {
         try
         {
-            var response = await _httpClient.PutAsJsonAsync($"booking/{booking.BookingId}", booking, _jsonOptions, cancellationToken);
+            var url = _httpClient.BaseAddress + $"/booking/{booking.BookingId}";
+            var response = await _httpClient.PutAsJsonAsync(url, booking, _jsonOptions, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -170,7 +176,9 @@ public class BookingApiService : IBookingApiService
     {
         try
         {
-            var response = await _httpClient.PatchAsJsonAsync($"booking/{bookingId}/status", status, _jsonOptions, cancellationToken);
+            var url = _httpClient.BaseAddress + $"/booking/{bookingId}/status";
+
+            var response = await _httpClient.PatchAsJsonAsync(url, status, _jsonOptions, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -189,6 +197,96 @@ public class BookingApiService : IBookingApiService
         {
             _logger.LogError(ex, "Exception while changing status for booking {BookingId}", bookingId);
             return false;
+        }
+    }
+
+    public async Task<bool> DeleteBookingAsync(Guid bookingId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var url = _httpClient.BaseAddress + $"/booking/{bookingId}";
+            var response = await _httpClient.DeleteAsync(url, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError(
+                "Error deleting booking {BookingId}. Status: {StatusCode}, Error: {Error}",
+                bookingId,
+                response.StatusCode,
+                error);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception while deleting booking {BookingId}", bookingId);
+            return false;
+        }
+    }
+
+    public async Task<IEnumerable<BookingDto>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var url = _httpClient.BaseAddress + $"/booking/status/{status}";
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<BookingDto>>(_jsonOptions, cancellationToken) ?? new List<BookingDto>();
+            }
+
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError(
+                "Error getting bookings by status {Status}. Status: {StatusCode}, Error: {Error}",
+                status,
+                response.StatusCode,
+                error);
+            return new List<BookingDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception while getting bookings by status {Status}", status);
+            return new List<BookingDto>();
+        }
+    }
+
+    public async Task<Guid?> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default)
+    {
+        CreateUser user = new
+        (
+            createUserDto.FirstName + createUserDto.LastName,
+            createUserDto.Email,
+            createUserDto.Role,
+            createUserDto.PreferredPaymentMethod,
+            null,
+            null);
+
+        try
+        {
+            var url = _httpClient.BaseAddress + "/users";
+            var response = await _httpClient.PostAsJsonAsync(url, user, _jsonOptions, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Guid>(_jsonOptions, cancellationToken);
+                return result;
+            }
+
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError(
+                "Error creating user. Status: {StatusCode}, Error: {Error}",
+                response.StatusCode,
+                error);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception while creating user");
+            return null;
         }
     }
 }

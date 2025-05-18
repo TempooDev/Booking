@@ -1,4 +1,5 @@
 ﻿using Booking.Core.Booking.Domain;
+using Booking.Core.Users.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -28,6 +29,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<BookingItem> Bookings => Set<BookingItem>();
+    public DbSet<User> Users => Set<User>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -88,6 +90,16 @@ public class ApplicationDbContext : DbContext
         }
 
         base.OnModelCreating(builder);
+
+        builder.Entity<User>(entity =>
+        {
+            entity.HasDiscriminator<UserRole>("Role")
+                .HasValue<Buyer>(UserRole.Buyer)
+                .HasValue<Seller>(UserRole.Seller);
+
+            entity.Property(u => u.Name).IsRequired().HasMaxLength(100);
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
+        });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

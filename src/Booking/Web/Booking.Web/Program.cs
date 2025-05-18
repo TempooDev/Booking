@@ -7,14 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register and configure the HttpClient for Booking API
-builder.Services.AddHttpClient<IBookingApiService, BookingApiService>(client =>
-{
-    // Configure the base address from appsettings.json
-    var bookingApiBaseUrl = builder.Configuration["BookingApi:BaseUrl"] ?? "http://localhost:5001/api";
-    client.BaseAddress = new Uri(bookingApiBaseUrl);
+builder.Services.AddScoped<IBookingApiService, BookingApiService>();
 
-    // Set default headers
+// Register the unified BookingApiClient
+builder.Services.AddHttpClient<BookingApiService>(client =>
+{
+    var bookingApiBaseUrl = Environment.GetEnvironmentVariable("BOOKING_API_URL")
+                            ?? builder.Configuration["BookingApi:BaseUrl"]
+                            ?? "https://localhost:7098/api/v1";
+    client.BaseAddress = new Uri(bookingApiBaseUrl);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 

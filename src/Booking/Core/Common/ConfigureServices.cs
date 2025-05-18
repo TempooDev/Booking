@@ -1,5 +1,7 @@
 ﻿using Booking.Core.Common.Infrastructure.Persistence;
 using Booking.Core.Common.Infrastructure.Services;
+using Booking.Core.Users.Domain.Repositories;
+using Booking.Core.Users.Infrastructure.Repositories;
 
 using FluentValidation;
 
@@ -42,6 +44,8 @@ public static class DependencyInjection
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+        services.AddScoped<IUserRepository, UserRepository>();
+
         return services;
     }
 
@@ -55,9 +59,8 @@ public static class DependencyInjection
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-              options.UseNpgsql(
-                  configuration.GetConnectionString("booking-db"),
-                  b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            options.UseNpgsql(configuration.GetConnectionString("booking-db"), b =>
+                b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         return services;
     }

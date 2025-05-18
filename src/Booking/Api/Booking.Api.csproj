@@ -15,5 +15,6 @@
     <ItemGroup>
       <ProjectReference Include="../Core/Booking.Core.csproj" />
       <ProjectReference Include="..\..\Aspire\Booking.ServiceDefaults\Booking.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
     </ItemGroup>
 </Project>

@@ -20,4 +20,9 @@ public interface IBookingApiService
     Task<Guid?> UpdateBookingAsync(UpdateBookingDto booking, CancellationToken cancellationToken = default);
 
     Task<bool> ChangeBookingStatusAsync(Guid bookingId, BookingStatus status, CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteBookingAsync(Guid bookingId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<BookingDto>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken cancellationToken = default);
+
+    Task<Guid?> CreateUserAsync(CreateUserDto createUserDto, CancellationToken cancellationToken = default);
 }

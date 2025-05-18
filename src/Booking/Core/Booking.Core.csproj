@@ -23,9 +23,8 @@
     <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common/Infrastructure/Persistence/Migrations/" />
-    <Folder Include="Booking\Infrastructure\Persistence\" />
-    <Folder Include="Common\Infrastructure\Persistence\Configurations\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Common/Infrastructure/Persistence/Migrations/" />
+        <Folder Include="Common\Infrastructure\Persistence\Configurations\" />
+    </ItemGroup>
 </Project>

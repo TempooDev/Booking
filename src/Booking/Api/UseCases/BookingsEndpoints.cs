@@ -7,16 +7,15 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Booking.Api;
+namespace Booking.Booking.Api.UseCases;
 
-public static class Endpoints
+public static class BookingsEndpoints
 {
     public static IEndpointRouteBuilder MapBookingEndpoints(this IEndpointRouteBuilder app)
     {
         var bookingGroup = app.MapGroup($"{ApiPaths.Root}/booking")
             .WithTags(ApiPaths.Booking);
 
-        // CreateBooking endpoint
         bookingGroup.MapPost("/", async (ISender mediator, [FromBody] CreateBookingCommand command, CancellationToken cancellationToken) =>
         {
             var result = await mediator.Send(command, cancellationToken);
@@ -28,14 +27,12 @@ public static class Endpoints
         .WithDescription("Creates a new booking")
         .WithSummary("Create a new booking");
 
-        // UpdateBooking endpoint
         bookingGroup.MapPut("/{bookingId}", async (
             ISender mediator,
             [FromRoute] Guid bookingId,
             [FromBody] UpdateBookingCommand command,
             CancellationToken cancellationToken) =>
         {
-            // Ensure the route parameter matches the command parameter
             if (bookingId != command.BookingId)
             {
                 return Results.BadRequest("Route bookingId and command BookingId must match");
@@ -50,7 +47,6 @@ public static class Endpoints
         .WithDescription("Updates an existing booking")
         .WithSummary("Update booking details");
 
-        // GetBookingById endpoint
         bookingGroup.MapGet("/{bookingId}", async (
             ISender mediator,
             [FromRoute] Guid bookingId,
@@ -66,7 +62,6 @@ public static class Endpoints
         .WithDescription("Gets booking details by ID")
         .WithSummary("Get a specific booking");
 
-        // ChangeStatusBooking endpoint
         bookingGroup.MapPatch("/{bookingId}/status", async (
             ISender mediator,
             [FromRoute] Guid bookingId,
@@ -83,7 +78,6 @@ public static class Endpoints
         .WithDescription("Changes the status of a booking")
         .WithSummary("Update booking status");
 
-        // GetBookingWithPagination endpoint
         bookingGroup.MapGet("/", async (
             ISender mediator,
             [FromQuery] Guid? bookingId,
