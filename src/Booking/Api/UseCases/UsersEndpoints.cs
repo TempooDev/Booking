@@ -75,6 +75,21 @@ public static class UsersEndpoints
         .WithDescription("Gets a user by ID")
         .WithSummary("Get user by ID");
 
+        usersGroup.MapGet("/{email}", async (ISender mediator, [FromRoute] string email) =>
+        {
+            var result = await mediator.Send(new GetUserByEmailQuery(email));
+
+            if (result.IsError)
+            {
+                return Results.NotFound(result.Errors);
+            }
+
+            return Results.Ok(result.Value);
+        })
+        .WithName("GetUserByEmail")
+        .WithDescription("Gets a user by Email")
+        .WithSummary("Get user by Email");
+
         usersGroup.MapDelete("/{id}", async (ISender mediator, [FromRoute] Guid id) =>
         {
             var result = await mediator.Send(new DeleteUserCommand(id));
