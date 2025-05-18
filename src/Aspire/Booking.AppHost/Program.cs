@@ -7,17 +7,14 @@ var sqlServer = builder.AddPostgres("sql")
 var bookingDb = sqlServer.AddDatabase("booking-db");
 
 var storage = builder.AddAzureStorage("storage")
-                   .RunAsEmulator();
+                   .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));
 var blobs = storage.AddBlobs("bookings-blobs");
 
 var messaging = builder
     .AddAzureServiceBus("servicebus")
-    .RunAsEmulator()
+    .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent))
     .AddServiceBusTopic("booking")
     .AddServiceBusSubscription("hotel");
-
-var kafka = builder.AddKafka("kafka")
-                   .WithKafkaUI();
 
 var bookingMigration = builder.AddProject<Projects.Booking_MigrationService>("booking-migrationservice")
     .WithReference(bookingDb)
@@ -43,6 +40,7 @@ builder.AddAzureFunctionsProject<Projects.Hotel_EventConsumer>("hotel-eventconsu
     .WithReference(blobs)
     .WaitFor(blobs);
 
-builder.AddAzureFunctionsProject<Projects.Hotel_Api>("hotel-api");
+builder.AddAzureFunctionsProject<Projects.Hotel_Api>("hotel-api")
+    .WithHostStorage(storage);
 
 builder.Build().Run();
