@@ -1,6 +1,6 @@
 ﻿@using Booking.Web.Services
 @using Booking.Web.Models
-
+@rendermode InteractiveServer
 
 <div>
     <label for="startDate">Start Date:</label>
@@ -42,6 +42,7 @@
     [Parameter] public Guid RoomId { get; set; }
     [Parameter] public Guid ConsumerId { get; set; }
     [Parameter] public Guid SellerId { get; set; }
+    [Parameter] public EventCallback OnBookingCompleted { get; set; }
 
     private DateTime? StartDate { get; set; }
     private DateTime? EndDate { get; set; }
@@ -75,6 +76,7 @@
         if (result.HasValue)
         {
             Console.WriteLine($"Booking created successfully with ID: {result.Value}");
+            await OnBookingCompleted.InvokeAsync(); 
         }
         else
         {

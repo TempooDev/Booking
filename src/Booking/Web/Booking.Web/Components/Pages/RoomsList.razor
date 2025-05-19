@@ -1,6 +1,6 @@
 ﻿@page "/rooms-list"
 @using Booking.Web.Components.Pages
-
+@rendermode InteractiveServer
 <div class="rooms-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
     @foreach (var room in Rooms)
     {
@@ -23,7 +23,7 @@
             style="background: white; padding: 16px; border-radius: 8px; width: 80%; max-width: 600px;">
             <button @onclick="CloseBookingModal"
                 style="float: right; background: none; border: none; font-size: 20px;">&times;</button>
-            <BookingRoom RoomId="SelectedRoomId" ConsumerId="SelectedConsumerId" SellerId="SelectedSellerId" />
+            <BookingRoom RoomId="SelectedRoomId" ConsumerId="SelectedConsumerId" SellerId="SelectedSellerId" OnBookingCompleted="CloseBookingModal" />
         </div>
     </div>
 }
