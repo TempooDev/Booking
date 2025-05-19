@@ -1,0 +1,84 @@
+﻿@using Booking.Web.Services
+@using Booking.Web.Models
+
+
+<div>
+    <label for="startDate">Start Date:</label>
+    <input id="startDate" type="date" @bind="StartDate" required />
+</div>
+
+<div>
+    <label for="endDate">End Date:</label>
+    <input id="endDate" type="date" @bind="EndDate" required />
+</div>
+
+<div>
+    <label for="guestCount">Number of Guests:</label>
+    <input id="guestCount" type="number" @bind="GuestCount" min="1" required />
+</div>
+
+<div>
+    <label for="roomType">Room Type:</label>
+    <select id="roomType" @bind="RoomType" required>
+        <option value="">-- Select Room Type --</option>
+        <option value="Single">Single</option>
+        <option value="Double">Double</option>
+        <option value="Suite">Suite</option>
+    </select>
+</div>
+
+<div>
+    <label for="notes">Notes:</label>
+    <textarea id="notes" @bind="Notes"></textarea>
+</div>
+
+<div>
+    <button @onclick="CreateBooking"
+        disabled="@(StartDate == null || EndDate == null || GuestCount <= 0 || string.IsNullOrEmpty(RoomType))">Create
+        Booking</button>
+</div>
+
+@code {
+    [Parameter] public Guid RoomId { get; set; }
+    [Parameter] public Guid ConsumerId { get; set; }
+    [Parameter] public Guid SellerId { get; set; }
+
+    private DateTime? StartDate { get; set; }
+    private DateTime? EndDate { get; set; }
+    private int GuestCount { get; set; } = 1;
+    private string RoomType { get; set; } = string.Empty;
+    private string Notes { get; set; } = string.Empty;
+
+    private async Task CreateBooking()
+    {
+        if (!StartDate.HasValue || !EndDate.HasValue)
+        {
+            Console.WriteLine("StartDate o EndDate no pueden ser nulos.");
+            return;
+        }
+
+        var booking = new CreateBookingDto
+        {
+            ProductId = RoomId,
+            CustomerId = ConsumerId,
+            SellerId = SellerId,
+            StartTime = StartDate.Value,
+            EndTime = EndDate.Value,
+            NumberOfGuests = GuestCount,
+            RoomType = RoomType,
+            Notes = Notes
+        };
+
+        var bookingService = new BookingApiService(new HttpClient(), new LoggerFactory().CreateLogger<BookingApiService>());
+        var result = await bookingService.CreateBookingAsync(booking);
+
+        if (result.HasValue)
+        {
+            Console.WriteLine($"Booking created successfully with ID: {result.Value}");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create booking.");
+        }
+    }
+}

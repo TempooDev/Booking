@@ -1,0 +1,63 @@
+﻿@page "/rooms-list"
+@using Booking.Web.Components.Pages
+
+<div class="rooms-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+    @foreach (var room in Rooms)
+    {
+        <div class="room-item" style="border: 1px solid #ccc; padding: 8px; border-radius: 4px;">
+            <h4>@room.Name</h4>
+            <p>Price: $@room.Price</p>
+            <div class="room-photo" style="width: 100%; aspect-ratio: 16 / 9; background-color: #ccc;">
+                <!-- Placeholder for room photo -->
+            </div>
+            <button @onclick="() => OpenBookingModal(room.Id)">Reserve</button>
+        </div>
+    }
+</div>
+
+@if (IsBookingModalVisible)
+{
+    <div class="modal-overlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;">
+        <div class="modal-content"
+            style="background: white; padding: 16px; border-radius: 8px; width: 80%; max-width: 600px;">
+            <button @onclick="CloseBookingModal"
+                style="float: right; background: none; border: none; font-size: 20px;">&times;</button>
+            <BookingRoom RoomId="SelectedRoomId" ConsumerId="SelectedConsumerId" SellerId="SelectedSellerId" />
+        </div>
+    </div>
+}
+
+@code {
+    private List<Room> Rooms { get; set; } = new List<Room>
+{
+new Room { Id = Guid.NewGuid(), Name = "Room 101", Price = 100 },
+new Room { Id = Guid.NewGuid(), Name = "Room 102", Price = 120 },
+new Room { Id = Guid.NewGuid(), Name = "Room 201", Price = 150 }
+};
+
+    private bool IsBookingModalVisible { get; set; } = false;
+    private Guid SelectedRoomId { get; set; }
+    private Guid SelectedConsumerId { get; set; }
+    private Guid SelectedSellerId { get; set; }
+
+    private void OpenBookingModal(Guid roomId)
+    {
+        SelectedRoomId = roomId;
+        SelectedConsumerId = Guid.NewGuid();
+        SelectedSellerId = Guid.NewGuid();
+        IsBookingModalVisible = true;
+    }
+
+    private void CloseBookingModal()
+    {
+        IsBookingModalVisible = false;
+    }
+
+    public class Room
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+    }
+}

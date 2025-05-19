@@ -60,7 +60,7 @@ public static class UsersEndpoints
         .WithDescription("Gets users by role")
         .WithSummary("Get users by role");
 
-        usersGroup.MapGet("/{id}", async (ISender mediator, [FromRoute] Guid id) =>
+        usersGroup.MapGet("/{id:guid}", async (ISender mediator, [FromRoute] Guid id) =>
         {
             var result = await mediator.Send(new GetUserByIdQuery(id));
 
