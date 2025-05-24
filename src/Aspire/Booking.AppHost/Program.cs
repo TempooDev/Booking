@@ -6,8 +6,6 @@ var sqlServer = builder.AddPostgres("sql")
 
 var bookingDb = sqlServer.AddDatabase("booking-db");
 
-var authDb = sqlServer.AddDatabase("auth-db");
-
 var storage = builder.AddAzureStorage("storage")
                    .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));
 var blobs = storage.AddBlobs("bookings-blobs");
@@ -40,7 +38,5 @@ builder.AddAzureFunctionsProject<Projects.Hotel_EventConsumer>("hotel-eventconsu
 
 builder.AddAzureFunctionsProject<Projects.Hotel_Api>("hotel-api")
     .WithHostStorage(storage);
-
-builder.AddProject<Projects.Auth_Api>("auth-api");
 
 builder.Build().Run();
