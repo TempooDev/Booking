@@ -1,0 +1,94 @@
+@page "/bookings"
+@using System.Collections.Generic
+@using Booking.Web.Services
+@using Booking.Web.Models
+@inject IBookingApiService BookingService
+
+<h3>Reservas</h3>
+
+@if (isLoading)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+else if (bookings != null && bookings.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Producto</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var booking in bookings)
+            {
+                <tr>
+                    <td>@booking.Id</td>
+                    <td>@booking.CustomerId</td>
+                    <td>@booking.SellerId</td>
+                    <td>@booking.ProductId</td>
+                    <td>@booking.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@booking.EndTime.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@booking.Status</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @onclick="() => ViewBooking(booking.Id)">Ver</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay reservas para mostrar.</p>
+}
+
+@code {
+    private bool isLoading = true;
+    private string? errorMessage;
+    private List<BookingDto>? bookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Obtener la lista de reservas desde la API
+            var response = await BookingService.GetBookingsAsync();
+
+            if (response != null)
+            {
+                bookings = response.Items;
+            }
+            else
+            {
+                errorMessage = "No se pudieron cargar las reservas.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ViewBooking(Guid id)
+    {
+        // Implementar navegación a la página de detalle
+        // Ejemplo: NavigationManager.NavigateTo($"/booking/{id}");
+    }
+}

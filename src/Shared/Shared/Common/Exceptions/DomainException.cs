@@ -1,4 +1,4 @@
-﻿namespace Booking.Shared.Common.Exceptions
+﻿namespace Shared.Common.Exceptions
 {
     public class DomainException : Exception
     {

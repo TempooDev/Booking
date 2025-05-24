@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+
+<ErrorBoundary>
+    <ChildContent>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+
+            <main>
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
+        </div>
+    </ChildContent>
+    <ErrorContent>
+        <div class="alert alert-danger">
+            Ocurrió un error inesperado. Por favor, intenta recargar la página.
+        </div>
+    </ErrorContent>
+</ErrorBoundary>

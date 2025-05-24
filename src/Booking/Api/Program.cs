@@ -1,5 +1,5 @@
-using Booking.Api;
-using Booking.Booking.Application.Common;
+using Booking.Booking.Api.UseCases;
+using Booking.Core.Common;
 
 using Microsoft.OpenApi.Models;
 
@@ -89,6 +89,7 @@ app.UseAuthorization();
 
 // Register minimal API endpoints
 app.MapBookingEndpoints();
+app.MapUsersEndpoints();
 
 // Keep existing controller endpoints for backward compatibility
 app.MapControllers();

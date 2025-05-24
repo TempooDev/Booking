@@ -1,0 +1,63 @@
+﻿using System.Text.Json;
+
+using Azure.Messaging.ServiceBus;
+
+using Booking.Core.Booking.Domain.Events;
+
+using MediatR;
+
+using Microsoft.Extensions.Logging;
+
+using Shared.Common.Models;
+
+namespace Booking.Core.Booking.Application.Events.EventHandlers;
+
+internal sealed class BookingCreatedEventHandler : INotificationHandler<DomainEventNotification<BookingCreatedEvent>>
+{
+    private readonly ILogger<BookingCreatedEventHandler> _logger;
+    private readonly ServiceBusSender _serviceBusSender;
+    private readonly string _topicName = "booking";
+
+    public BookingCreatedEventHandler(ILogger<BookingCreatedEventHandler> logger, ServiceBusClient serviceBusClient)
+    {
+        _logger = logger;
+        _serviceBusSender = serviceBusClient.CreateSender(_topicName);
+    }
+
+    public async Task Handle(DomainEventNotification<BookingCreatedEvent> notification, CancellationToken ct)
+    {
+        var domainEvent = notification.DomainEvent;
+        try
+        {
+            _logger.LogInformation("Iniciando envío de evento BookingCreated a Service Bus. Detalles del evento: {@Event}", domainEvent);
+
+            var messageBody = JsonSerializer.Serialize(domainEvent);
+
+            var message = new ServiceBusMessage(messageBody)
+            {
+                Subject = "BookingCreated",
+                ContentType = "application/json",
+            };
+
+            message.ApplicationProperties.Add("eventType", "BookingCreated");
+            message.ApplicationProperties.Add("timestamp", DateTime.UtcNow.ToString("o"));
+            message.ApplicationProperties.Add("eventId", Guid.NewGuid().ToString());
+            message.ApplicationProperties.Add("source", "BookingService");
+
+            _logger.LogDebug("Mensaje de Service Bus preparado para envío: {@Message}", message);
+
+            await _serviceBusSender.SendMessageAsync(message, ct);
+
+            _logger.LogInformation("Evento BookingCreated enviado exitosamente a Service Bus. EventId: {EventId}", message.ApplicationProperties["eventId"]);
+        }
+        catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.ServiceCommunicationProblem)
+        {
+            _logger.LogError(ex, "Error de comunicación con Service Bus al enviar evento BookingCreated. Topic: {TopicName}", _topicName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al enviar evento BookingCreated a Service Bus. Topic: {TopicName}", _topicName);
+            throw;
+        }
+    }
+}

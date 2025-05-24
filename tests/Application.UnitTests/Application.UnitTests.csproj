@@ -22,9 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-        <ProjectReference Include="..\..\src\Booking\Application\Booking.Core.csproj" />
-        <ProjectReference Include="..\..\src\Shared\Shared\Shared.csproj" />
-    </ItemGroup>
+    <ProjectReference Include="..\..\src\Booking\Core\Booking.Core.csproj" />
+    <ProjectReference Include="..\..\src\Booking\Application\Booking.Core.csproj" />
+    <ProjectReference Include="..\..\src\Shared\Shared\Shared.csproj" />
+  </ItemGroup>
 
 </Project>
 

@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-using Booking.Booking.Application.Common.Infrastructure.Persistence;
+using Booking.Core.Common.Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
 using OpenTelemetry.Trace;
 
-namespace Booking.Booking.MigrationService
+namespace Booking.MigrationService
 {
     public class Worker : BackgroundService
     {

@@ -28,7 +28,7 @@ namespace Hotel.BookingHandler
             _blobContainerClient = blobServiceClient.GetBlobContainerClient("booking-blobs");
 
             // Crear contenedor si no existe (solo una vez al inicio)
-            _blobContainerClient.CreateIfNotExists(PublicAccessType.None);
+            // _blobContainerClient.CreateIfNotExists(PublicAccessType.None);
         }
 
         [Function("BookingHandler")]

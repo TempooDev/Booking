@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Hotel.Api": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7134",
-      "launchBrowser": false
-    }
-  }
-}
