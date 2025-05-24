@@ -17,13 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Auth\Domain\" />
-    <Folder Include="Auth\Infrastructure\" />
-    <Folder Include="Auth\Application\" />
+    <Folder Include="Auth\LoginUser\Domain\" />
+    <Folder Include="Auth\LoginUser\Infrastructure\" />
+    <Folder Include="Auth\RegisterUser\Domain\" />
+    <Folder Include="Auth\RegisterUser\Infrastructure\" />
     <Folder Include="Common\Infrastructure\Persistence\Migrations\" />
-    <Folder Include="Common\Domain\" />
     <Folder Include="Common\Error\" />
-    <Folder Include="Common\Interfaces\" />
   </ItemGroup>
 
 </Project>

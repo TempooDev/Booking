@@ -1,8 +1,6 @@
-using Auth.Core.Application.Commands;
-using Auth.Core.Application.Queries;
+using Auth.Core.Auth.RegisterUser.Application;
+using Auth.Core.Common;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 
 namespace Booking.Auth.Api.UseCases;
 
@@ -10,16 +8,19 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication app)
     {
-        app.MapPost("/auth/register", async (RegisterUserCommand command, IMediator mediator) =>
-        {
-            var result = await mediator.Send(command);
-            return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Errors);
-        });
+        var authGroup = app.MapGroup($"{ApiPaths.Root}/auth").WithTags(ApiPaths.Auth);
 
-        app.MapPost("/auth/login", async (LoginUserCommand command, IMediator mediator) =>
+        authGroup.MapPost("/register", async (ISender sender, [FromBody] RegisterUserCommand command, CancellationToken ct) =>
         {
-            var result = await mediator.Send(command);
-            return result.IsSuccess ? Results.Ok(result.Value) : Results.Unauthorized(result.Errors);
-        });
+            var result = await mediator.Send(command, ct);
+            return result.Match(
+                value => Results.Ok(value),
+                errors => Results.Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        })
+            .WithName("RegisterUser")
+            .WithDescription("Register a user on System")
+            .WithSummary("");
+
     }
 }

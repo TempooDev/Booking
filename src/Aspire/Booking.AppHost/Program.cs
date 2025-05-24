@@ -31,10 +31,6 @@ var bookingApi = builder.AddProject<Projects.Booking_Api>("booking-api")
 bookingApi.WithReference(messaging)
     .WaitFor(messaging);
 
-var bookingWeb = builder.AddProject<Projects.Booking_Web>("booking-web")
-    .WithReference(bookingApi)
-    .WaitFor(bookingApi);
-
 builder.AddAzureFunctionsProject<Projects.Hotel_EventConsumer>("hotel-eventconsumer")
     .WithHostStorage(storage)
     .WithReference(messaging)

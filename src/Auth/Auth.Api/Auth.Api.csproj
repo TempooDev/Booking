@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Aspire\Booking.ServiceDefaults\Booking.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Auth.Core\Auth.Core.csproj" />
   </ItemGroup>
 
 </Project>
